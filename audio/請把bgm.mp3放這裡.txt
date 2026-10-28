@@ -1,0 +1,2 @@
+請把主題曲 MP3 檔放在這個資料夾，並命名為 bgm.mp3
+（也就是 audio/bgm.mp3，和 index.html 放在同一層的 audio 資料夾內）

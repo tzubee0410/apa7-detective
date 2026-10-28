@@ -1,0 +1,36 @@
+漂浮圖與封面圖檔名對照（請放透明 PNG，檔名要完全一樣）
+
+封面：
+  images/cover-01.png  左上
+  images/cover-02.png  主視覺（右側大圖）
+  images/cover-03.png  左下
+
+案件零：
+  images/float-01.png  右上
+  images/float-02.png  左側
+
+案件一：
+  images/float-03.png  右上
+  images/float-04.png  左側
+  images/float-05.png  右下
+
+案件二：
+  images/float-06.png  右上
+  images/float-07.png  左側
+
+案件三：
+  images/float-08.png  右上
+  images/float-09.png  左側
+
+結案任務：
+  images/float-10.png  右上
+  images/float-11.png  左側
+  images/float-12.png  右下
+
+結案考核：
+  images/float-13.png  右上
+  images/float-14.png  左側
+
+沒放圖的位置不會顯示。
+想看每個位置在哪：用瀏覽器開 index.html?slots，空位置會出現虛線框與檔名。
+大小、位置在 index.html 裡搜尋「漂浮圖・」或「封面圖・」，修改那一行的 style。

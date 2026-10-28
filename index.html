@@ -1,0 +1,1458 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APA 文獻偵探社</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--ink:#111;--paper:#fdfdfb;--mid:#7a7a7a;--soft:#e9e9e6;--hud:58px}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Noto Sans TC",system-ui,sans-serif;line-height:1.75;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(#0000000d 1px,transparent 1.4px) 0 0/5px 5px;pointer-events:none;z-index:0}
+h1,h2,h3{line-height:1.25;margin:0 0 .5em}
+button{font:inherit;color:inherit}
+a{color:inherit}
+.sfx{font-family:"Bangers",sans-serif;letter-spacing:.04em}
+.hidden{display:none!important}
+
+/* ---------- screentones (B&W 色碼) ---------- */
+.t-author{background:radial-gradient(#111 1.4px,transparent 1.7px) 0 0/6px 6px #fff}
+.t-date{background:repeating-linear-gradient(-45deg,#111 0 2px,#fff 2px 8px)}
+.t-title{background:repeating-linear-gradient(45deg,#111 0 1px,transparent 1px 6px),repeating-linear-gradient(-45deg,#111 0 1px,#fff 1px 6px)}
+.t-source{background:#111;color:#fff}
+.u-author{border-bottom:3px dotted #111}
+.u-date{border-bottom:4px double #111}
+.u-title{text-decoration:underline wavy #111;text-underline-offset:5px}
+.u-source{background:#111;color:#fff;padding:0 .2em}
+.chip{display:inline-flex;align-items:center;gap:.4em;font-weight:700;font-size:.85rem;border:2px solid #111;padding:.05em .55em .05em .15em;background:#fff;white-space:nowrap}
+.chip i{display:inline-block;width:1.2em;height:1.2em;border:2px solid #111}
+
+/* ---------- manga frame + images ---------- */
+/* .mframe{border:4px solid #111;background:#fff;overflow:hidden;box-shadow:7px 7px 0 #111;position:relative} */
+.mframe img{display:block;width:100%;object-fit:cover;filter:grayscale(1) contrast(1.08)}
+.ph{width:100%;height:100%;min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.75rem;font-weight:700;padding:8px;background:radial-gradient(#111 1px,transparent 1.3px) 0 0/5px 5px #fff}
+.ph span{background:#fff;border:2px solid #111;padding:.2em .5em}
+
+/* ---------- bubbles ---------- */
+.bubble{position:relative;background:#fff;border:3px solid #111;border-radius:38px;padding:1em 1.4em;font-weight:500}
+.bubble::before,.bubble::after{content:"";position:absolute;border-style:solid;border-color:transparent}
+.bubble::before{left:38px;bottom:-26px;border-width:26px 16px 0 0;border-top-color:#111}
+.bubble::after{left:41px;bottom:-19px;border-width:20px 11px 0 0;border-top-color:#fff}
+.bubble.tail-r::before{left:auto;right:38px;border-width:26px 0 0 16px;border-top-color:#111}
+.bubble.tail-r::after{left:auto;right:41px;border-width:20px 0 0 11px;border-top-color:#fff}
+.bubble.tail-l::before{left:-24px;bottom:auto;top:24px;border-width:0 26px 14px 0;border-color:transparent #111 transparent transparent}
+.bubble.tail-l::after{left:-17px;bottom:auto;top:28px;border-width:0 19px 9px 0;border-color:transparent #fff transparent transparent}
+.think{position:relative;background:#fff;border:3px solid #111;border-radius:50%;padding:1.8em 2em;text-align:center}
+.think::before,.think::after{content:"";position:absolute;border:3px solid #111;background:#fff;border-radius:50%}
+.think::before{width:22px;height:22px;left:18%;bottom:-24px}
+.think::after{width:12px;height:12px;left:12%;bottom:-40px}
+.shout{--jag:polygon(0% 18%,9% 12%,7% 0%,20% 8%,30% 0%,38% 9%,50% 0%,58% 10%,70% 1%,76% 11%,90% 3%,89% 16%,100% 20%,93% 32%,100% 45%,92% 55%,100% 70%,90% 76%,96% 92%,82% 88%,74% 100%,64% 90%,52% 100%,43% 90%,30% 100%,25% 88%,10% 96%,12% 82%,0% 76%,7% 64%,0% 52%,8% 42%,0% 30%);background:#111;clip-path:var(--jag);padding:5px;display:inline-block}
+.shout>div{background:#fff;clip-path:var(--jag);padding:2.3em 2.8em;font-weight:900;text-align:center}
+
+/* ---------- panels ---------- */
+.panel{background:#fff;border:4px solid #111;position:relative;padding:22px;box-shadow:6px 6px 0 #111}
+.panel.tilt-l{transform:rotate(-.7deg)}
+.panel.tilt-r{transform:rotate(.6deg)}
+.panel h3{font-weight:900;font-size:1.15rem}
+.panel .tag{position:absolute;top:-16px;left:16px;background:#111;color:#fff;font-weight:900;font-size:.8rem;padding:.15em .7em}
+.grid{display:grid;gap:22px;margin:26px 0}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.span2{grid-column:span 2}
+.speed{position:absolute;inset:0;pointer-events:none;background:repeating-conic-gradient(from 0deg at 50% 50%,#111 0deg 1.1deg,transparent 1.1deg 6deg);-webkit-mask-image:radial-gradient(circle,transparent 38%,#000 72%);mask-image:radial-gradient(circle,transparent 38%,#000 72%);opacity:.9}
+.note{font-size:.85rem;color:#444}
+.label-fake{display:inline-block;font-size:.72rem;font-weight:700;border:2px dashed #111;padding:0 .4em;margin-left:.4em;vertical-align:middle}
+.label-real{display:inline-block;font-size:.72rem;font-weight:700;background:#111;color:#fff;padding:0 .45em;margin-left:.4em;vertical-align:middle}
+
+/* ---------- buttons ---------- */
+.btn{cursor:pointer;background:#111;color:#fff;border:3px solid #111;font-weight:900;padding:.6em 1.4em;box-shadow:5px 5px 0 #888;transition:transform .12s,box-shadow .12s}
+.btn:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:7px 7px 0 #888}
+.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:1px 1px 0 #888}
+.btn.ghost{background:#fff;color:#111}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn:focus-visible,.opt:focus-visible,.dcard:focus-visible,.seg:focus-visible{outline:3px dashed #111;outline-offset:4px}
+
+/* ---------- start screen ---------- */
+#start{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;z-index:2;background:#fff}
+#start .speed{opacity:1}
+.cover{position:relative;width:min(1180px,94vw);display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:30px}
+.cover h1{font-size:clamp(3rem,8vw,6.4rem);font-weight:900;line-height:1.05;letter-spacing:.02em}
+.cover h1 .apa{font-family:"Bangers";font-size:1.25em;display:block;letter-spacing:.06em}
+.cover .tagline{font-weight:700;font-size:1.05rem;margin:.6em 0 1.4em;max-width:30em}
+.cover .go{font-size:1.6rem;padding:.3em 1em}
+.cover-art{position:relative;height:min(78vh,640px)}
+/* 封面插圖：位置與大小改 HTML 裡每張圖的 style（說明見下方「漂浮插圖設定」） */
+.cover-art .cimg{position:absolute;top:var(--top,auto);bottom:var(--bottom,auto);left:var(--left,auto);right:var(--right,auto);
+  width:var(--w,40%);height:var(--h,40%);transform:rotate(var(--rot,0deg))}
+.cover-bubble{position:absolute;right:56%;top:46%;z-index:3;font-size:1.05rem;transform:rotate(-4deg)}
+.scroll-cue{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-weight:900;font-size:.85rem;background:#fff;border:3px solid #111;padding:.2em .8em}
+#wipe{position:fixed;inset:0;z-index:999;pointer-events:none;background:#111;clip-path:polygon(0 0,0 0,0 100%,0 100%)}
+#wipe.go{animation:wipe 1.1s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes wipe{0%{clip-path:polygon(0 0,0 0,-20% 100%,-20% 100%)}45%{clip-path:polygon(0 0,120% 0,100% 100%,-20% 100%)}55%{clip-path:polygon(0 0,120% 0,100% 100%,-20% 100%)}100%{clip-path:polygon(120% 0,120% 0,100% 100%,100% 100%)}}
+
+/* ---------- HUD + nav ---------- */
+#hud{position:fixed;top:0;left:0;right:0;height:var(--hud);background:#fff;border-bottom:4px solid #111;z-index:50;display:flex;align-items:center;gap:14px;padding:0 16px}
+#hud .brand{font-weight:900;white-space:nowrap}
+#hud .navbtn{display:none}
+.pbar{flex:1;display:flex;align-items:center;gap:10px;min-width:0}
+.pbar .track{flex:1;height:20px;border:3px solid #111;position:relative;background:#fff;display:grid;grid-template-columns:repeat(5,1fr)}
+.pbar .track span{border-right:2px solid #111}
+.pbar .track span:last-child{border-right:0}
+.pbar .track span.on{background:repeating-linear-gradient(-45deg,#111 0 3px,#fff 3px 6px)}
+.pbar .pct{font-weight:900;min-width:3.2em;text-align:right}
+.hud-badges{display:flex;gap:4px}
+.mb{width:28px;height:28px;border-radius:50%;border:2px dashed #999;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#bbb}
+.mb.on{border:3px solid #111;background:#111;color:#fff}
+.rank{font-weight:900;font-size:.85rem;border:2px solid #111;padding:.05em .5em;white-space:nowrap}
+.pts{font-family:"Bangers";font-size:1.2rem;white-space:nowrap}
+#nav{position:fixed;left:0;top:var(--hud);bottom:0;width:172px;background:#fff;border-right:4px solid #111;z-index:40;padding:16px 12px;overflow:auto}
+#nav h4{margin:0 0 10px;font-weight:900}
+#nav a{display:block;text-decoration:none;border:3px solid #111;margin-bottom:10px;padding:.4em .6em;font-weight:700;font-size:.88rem;background:#fff;box-shadow:3px 3px 0 #111}
+#nav a small{display:block;font-weight:500;font-size:.75rem}
+#nav a.done{background:#111;color:#fff}
+#nav a.locked{border-style:dashed;box-shadow:none;color:#777}
+#nav .reset{margin-top:18px;font-size:.75rem;background:none;border:0;text-decoration:underline;cursor:pointer;padding:0}
+main{position:relative;z-index:1;padding-top:var(--hud);padding-left:172px}
+
+/* ---------- case sections ---------- */
+.case{position:relative;max-width:1000px;margin:0 auto;padding:90px 24px 70px}
+.case-head{position:relative;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:end;margin-bottom:12px}
+.case-head .file{font-family:"Bangers";font-size:clamp(3.4rem,9vw,6rem);line-height:.8;background:#111;color:#fff;padding:.12em .2em 0;transform:rotate(-3deg);box-shadow:8px 8px 0 #bbb}
+.case-head h2{font-size:clamp(1.6rem,3.4vw,2.4rem);font-weight:900}
+.case-head .lead{margin:0;font-weight:700}
+/* ============================================================
+   漂浮插圖設定（左右兩側會跟著捲動浮動的圖，以及封面的三張圖）
+   ------------------------------------------------------------
+   ★ 圖片檔：把透明 PNG 放進 images 資料夾，檔名對應 HTML 註解寫的名稱
+     （封面：cover-01～cover-03.png；各關卡：float-01～float-14.png）
+     沒放圖的位置不會顯示任何東西。
+   ★ 想看每個位置在哪裡：在網址最後加上 ?slots
+     例如 index.html?slots，空位置會顯示虛線框與檔名。
+   ------------------------------------------------------------
+   每張漂浮圖在 HTML 裡都有一行 style="..."，直接改那裡就能調整：
+     --top   ：距離該關卡頂端多遠（往下移就加大，例如 120px）
+     --right ：距離內容右邊多遠（負數＝往右突出到頁面邊緣，例如 -210px）
+     --left  ：距離內容左邊多遠（負數＝往左突出，例如 -230px）
+               ※ 一張圖只要設 --right 或 --left 其中一個
+     --w     ：圖框寬度（例如 230px）
+     --h     ：圖框高度（例如 300px）
+     --pos   ：圖片在框內顯示哪個部分（center / top / bottom / 30% 20%）
+     --fit   ：contain＝完整顯示不裁切（預設，適合透明 PNG）／cover＝填滿裁切
+     --rot   ：（封面圖用）傾斜角度，例如 5deg；漂浮圖用 data-rot
+     --bottom：（封面圖用）距離底部多遠，可代替 --top
+   HTML 屬性：
+     data-speed：視差速度，正數往上飄、負數往下飄，0＝不動，數字越大越明顯
+     data-rot  ：傾斜角度（度），例如 3 或 -4
+     data-img  ：要顯示的圖片檔名（不含副檔名），例如 float-01
+   想刪掉某張圖：把那一整行 <div class="float ...">...</div> 刪除即可
+   預設值（沒寫 style 時使用）：
+   ============================================================ */
+.float{--top:40px;--right:auto;--left:auto;--w:220px;--h:280px;--pos:center;--fit:contain;--k:1;--ko:1;
+  position:absolute;z-index:0;pointer-events:none;will-change:transform;
+  top:var(--top);width:calc(var(--w) * var(--k));height:calc(var(--h) * var(--k))}
+.float.f-r,.float.f-r2{right:calc(var(--right) * var(--ko))}
+.float.f-l{left:calc(var(--left) * var(--ko))}
+.float.f-r{--right:-210px}
+.float.f-l{--left:-230px;--top:420px}
+.float.f-r2{--right:-200px;--top:780px}
+.float .fimg{animation:bob 6s ease-in-out infinite}
+/* 無框圖片（漂浮圖與封面圖共用）：沒有黑框、沒有陰影，適合透明 PNG */
+.fimg{width:100%;height:100%;position:relative}
+.fimg img{display:block;width:100%;height:100%;object-fit:var(--fit,contain);object-position:var(--pos,center);filter:grayscale(1) contrast(1.05)}
+.fimg.empty img{display:none}
+/* 網址加上 ?slots 時，顯示空位置的虛線框與檔名，方便調整位置 */
+.show-slots .fimg.empty{outline:2px dashed #111;outline-offset:-2px;background:rgba(0,0,0,.05)}
+.show-slots .fimg.empty::after{content:attr(data-file);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;border:2px solid #111;font-size:.75rem;font-weight:700;padding:.1em .4em;white-space:nowrap}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -14px}}
+.case>*:not(.float){position:relative;z-index:1}
+.strip{position:relative;height:150px;overflow:hidden;border-top:4px solid #111;border-bottom:4px solid #111;background:#fff;margin:10px 0}
+.strip .speed{-webkit-mask-image:none;mask-image:none;background:repeating-linear-gradient(90deg,#111 0 2px,transparent 2px 22px);opacity:.15}
+.strip .word{position:absolute;top:50%;white-space:nowrap;font-family:"Bangers";font-size:5.5rem;line-height:1;transform:translateY(-50%);will-change:transform;-webkit-text-stroke:3px #111;color:#fff;text-shadow:6px 6px 0 #111}
+.closebar{position:relative;margin-top:36px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;border:4px solid #111;padding:16px 20px;background:#fff}
+.closebar .need{flex:1;font-weight:700;min-width:200px}
+.closebar .need b{font-family:"Bangers";font-size:1.3rem;margin-left:.3em}
+.stamp{position:absolute;right:22px;top:-46px;border:6px double #111;border-radius:50%;width:120px;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.5rem;background:#fff;opacity:0;transform:rotate(-14deg) scale(2.6);pointer-events:none}
+.stamp small{font-size:.7rem;font-weight:700}
+.stamp.on{animation:stamp .45s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes stamp{to{opacity:1;transform:rotate(-14deg) scale(1)}}
+
+/* BGM */
+#bgmBtn{position:fixed;top:10px;right:16px;z-index:120;display:flex;align-items:center;gap:.45em;cursor:pointer;background:#fff;color:#111;border:3px solid #111;font-weight:900;font-size:.88rem;padding:.3em .8em;box-shadow:4px 4px 0 #111;transition:transform .12s}
+#bgmBtn:hover{transform:translate(-1px,-1px)}
+#bgmBtn.on{background:#111;color:#fff;box-shadow:4px 4px 0 #888}
+#bgmBtn .eq{display:inline-flex;gap:2px;align-items:flex-end;height:14px}
+#bgmBtn .eq i{width:3px;height:4px;background:currentColor}
+#bgmBtn.on .eq i{animation:eq .8s ease-in-out infinite}
+#bgmBtn.on .eq i:nth-child(2){animation-delay:-.3s}#bgmBtn.on .eq i:nth-child(3){animation-delay:-.55s}
+@keyframes eq{0%,100%{height:4px}50%{height:14px}}
+#bgmBtn:focus-visible{outline:3px dashed #111;outline-offset:4px}
+#bgmPlayer{position:fixed;top:64px;right:16px;z-index:119;width:200px;background:#fff;border:4px solid #111;box-shadow:6px 6px 0 #111;transform:rotate(1deg)}
+#bgmPlayer.off{display:none}
+#bgmPlayer .cap{display:flex;justify-content:space-between;align-items:center;background:#111;color:#fff;font-size:.72rem;font-weight:900;padding:.15em .5em}
+#bgmPlayer .cap button{background:none;border:0;color:#fff;cursor:pointer;font-weight:900;padding:0 .2em}
+#bgmPlayer .vid{width:100%;aspect-ratio:16/9;background:#111}
+#bgmPlayer .vid iframe,#bgmPlayer .vid>div{width:100%;height:100%;display:block;border:0}
+#bgmPlayer.mini .vid{height:0;aspect-ratio:auto;overflow:hidden}
+#bgmPlayer .vol{display:flex;align-items:center;gap:.4em;padding:.3em .5em;font-size:.72rem;font-weight:700}
+#bgmPlayer .vol input{flex:1;accent-color:#111}
+#hud{padding-right:178px}
+#bgmPlayer .cap>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bgmPlayer .vol span{white-space:nowrap}
+@media (max-width:820px){#bgmBtn .lbl{display:none}#hud{padding-right:104px}#hud .pts{display:none}#bgmPlayer{width:180px}}
+/* reset modal */
+.modal{position:fixed;inset:0;z-index:300;background:rgba(255,255,255,.75);background-image:radial-gradient(#111 1px,transparent 1.3px);background-size:6px 6px;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:#fff;border:5px solid #111;box-shadow:10px 10px 0 #111;padding:24px;max-width:440px;text-align:center}
+.modal-box .shout>div{font-size:1.3rem}
+/* intro speaker */
+.speaker{display:flex;gap:18px;align-items:center}
+.speaker .face{width:120px;flex:none}
+.speaker .who{font-weight:900;font-size:.8rem;text-align:center;margin-top:8px}
+
+/* warmup */
+.warm{display:grid;gap:12px}
+.warm .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-bottom:2px dashed #111;padding-bottom:10px}
+.warm .row p{flex:1;margin:0;min-width:220px}
+.mini{cursor:pointer;border:3px solid #111;background:#fff;font-weight:900;width:44px;height:38px}
+.mini.sel{background:#111;color:#fff}
+.warm .wfb{flex-basis:100%;font-size:.92rem;border-left:6px solid #111;background:#f3f3f0;padding:.45em .8em;animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+.warm .wfb:empty{display:none}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+/* flip cards */
+.flips{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:24px 0}
+.flip{perspective:1000px;height:330px;cursor:pointer;border:0;background:none;padding:0;text-align:left}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.flip.on .in{transform:rotateY(180deg)}
+.flip .fc{position:absolute;inset:0;backface-visibility:hidden;border:4px solid #111;box-shadow:6px 6px 0 #111;background:#fff;display:flex;flex-direction:column;overflow:hidden}
+.flip .front .tone{height:44%;border-bottom:4px solid #111;display:flex;align-items:center;justify-content:center}
+.flip .front .tone b{background:#fff;border:3px solid #111;padding:.1em .6em;font-size:1.4rem;font-weight:900}
+.flip .front .q{padding:14px;font-weight:900;font-size:1.05rem}
+.flip .front .hint{margin-top:auto;padding:0 14px 12px;font-size:.8rem;font-weight:700}
+.flip .back{transform:rotateY(180deg);padding:14px;font-size:.84rem;overflow:auto}
+.flip .back h4{margin:0 0 .4em;font-size:1rem}
+.flip .back code{display:block;background:#f1f1ee;border:2px solid #111;padding:.35em .5em;margin:.4em 0;font-family:inherit;font-size:.8rem;word-break:break-word}
+.thoughts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin:30px 0 20px}
+.thoughts .think{font-size:.9rem;padding:2em 1.6em}
+
+/* case 1 bubbles */
+.scn{border:4px solid #111;background:#fff;padding:18px 20px 26px;margin-bottom:24px;box-shadow:6px 6px 0 #111}
+.scn .sit{display:inline-block;background:#111;color:#fff;font-weight:900;padding:.1em .7em;margin-bottom:14px}
+.scn .pair{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.cbub{cursor:pointer;text-align:center;font-weight:700;font-size:1.02rem;padding:1.1em 1em;transition:transform .15s;width:100%}
+.cbub:hover{transform:translateY(-3px) rotate(-.5deg)}
+.cbub .w{display:block;font-size:.72rem;font-weight:900;color:#555;margin-bottom:.3em}
+.cbub.caught{background:#111;color:#fff}
+.cbub.caught::after{border-top-color:#111}
+.cbub.caught .w{color:#ddd}
+.cbub.okay{border-style:dashed}
+.scn .why{margin-top:22px;border-left:8px solid #111;padding:.4em .9em;background:#f3f3f0;font-size:.92rem}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{translate:0}25%{translate:-8px}50%{translate:7px}75%{translate:-4px}}
+
+/* drag */
+.dcard{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;position:relative;z-index:2}
+.dcard.dragging{z-index:60;cursor:grabbing;box-shadow:12px 12px 0 #111!important}
+.dcard.picked{outline:4px dashed #111;outline-offset:3px}
+.dcard.bad{animation:shake .4s}
+.dz.over{background:repeating-linear-gradient(-45deg,#eee 0 6px,#fff 6px 12px)!important}
+.dz.over.t-source{background:#444!important}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,calc(100% + 80px));visibility:hidden;z-index:200;transition:transform .35s cubic-bezier(.3,1.5,.5,1),visibility 0s .35s;max-width:min(560px,92vw)}
+.toast.on{transform:translate(-50%,0);visibility:visible;transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+.toast .bubble{box-shadow:6px 6px 0 #111}
+
+/* puzzle */
+.puz-ref{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:16px 0}
+.slot{min-height:64px;min-width:130px;flex:1;border:3px dashed #111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;padding:6px;position:relative}
+.slot>.lab{position:absolute;top:-12px;left:8px;background:#fff;padding:0 .3em;font-size:.72rem}
+.slot.filled{border-style:solid}
+.pieces{display:flex;flex-wrap:wrap;gap:12px;min-height:70px;padding:10px;border:3px solid #111;background:#f6f6f3}
+.piece{border:3px solid #111;padding:.5em .8em;font-weight:700;box-shadow:4px 4px 0 #111;font-size:.9rem;max-width:100%}
+.piece span{background:#fff;padding:.05em .3em}
+.piece.t-source span{background:#111;color:#fff}
+
+/* template table */
+.tpl{width:100%;border-collapse:collapse;font-size:.88rem}
+.tpl th,.tpl td{border:3px solid #111;padding:.6em .7em;vertical-align:top;text-align:left}
+.tpl th{background:#111;color:#fff;white-space:nowrap}
+.tpl td.ex{font-size:.82rem}
+.tpl td:first-child{white-space:nowrap;font-weight:700}
+.tpl td.hang{padding-left:2.9em}
+.hang{padding-left:2.2em;text-indent:-2.2em}
+
+/* classify */
+.srcs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}
+.src{background:#fff;border:3px solid #111;box-shadow:5px 5px 0 #111;font-size:.82rem}
+.src .bar{background:#111;color:#fff;font-size:.7rem;padding:.2em .5em;display:flex;gap:6px;align-items:center}
+.src .bar i{width:8px;height:8px;border-radius:50%;border:1.5px solid #fff;display:inline-block}
+.src .body{padding:.6em .7em}
+.src .body b{display:block;font-size:.9rem}
+.folders{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.folder{border:4px solid #111;background:#fff;min-height:120px;position:relative;padding:34px 10px 10px;clip-path:polygon(0 12px,38% 12px,44% 0,100% 0,100% 100%,0 100%)}
+.folder>h5{position:absolute;top:14px;left:10px;margin:0;font-size:.95rem;font-weight:900}
+.folder .src{transform:scale(.92);transform-origin:left top;margin-top:6px;box-shadow:none;cursor:default}
+
+/* case 3 magnifier */
+.exhibit{position:relative;border:4px solid #111;background:#fff;padding:26px 22px;font-size:1.12rem;line-height:2.2;box-shadow:6px 6px 0 #111;cursor:none}
+.exhibit .hdr{position:absolute;top:-16px;left:16px;background:#111;color:#fff;font-weight:900;font-size:.8rem;padding:.1em .7em;line-height:1.6}
+.seg{cursor:none;border-radius:4px;padding:.08em .12em;transition:background .15s,outline-color .15s;outline:2px dashed transparent;outline-offset:1px}
+.seg:hover{outline-color:#111;background:#f1f1ee}
+.seg.dot{display:inline-block;min-width:1.4em;text-align:center;padding:.05em .2em}
+.seg.hinted{animation:hintb 1.6s 2}
+@keyframes hintb{0%,100%{outline-color:transparent}50%{outline-color:#111;background:#e4e4e0}}
+.exhibit,.qfind{-webkit-user-select:none;user-select:none}
+.lens::before{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;z-index:2;background:linear-gradient(#111,#111) center/2px 100% no-repeat,linear-gradient(#111,#111) center/100% 2px no-repeat;opacity:.55}
+.seg.found{background:#111;color:#fff;outline:3px solid #111}
+.seg.found:hover{background:#111}
+.seg.nope{animation:shake .35s}
+.lens{position:absolute;width:150px;height:150px;border-radius:50%;border:6px solid #111;pointer-events:none;overflow:hidden;background:#fff;box-shadow:0 0 0 3px #fff,6px 6px 0 3px #111;display:none;z-index:5}
+.lens::after{content:"";position:absolute;width:16px;height:70px;background:#111;right:-24px;bottom:-62px;transform:rotate(-45deg)}
+.lens .clone{position:absolute;left:0;top:0;transform-origin:0 0;line-height:2.2;font-size:1.12rem;padding:26px 22px}
+.exhibit.touch{cursor:auto}.exhibit.touch .seg{cursor:pointer}
+.ex-meta{display:flex;gap:14px;align-items:center;margin:12px 0 4px;flex-wrap:wrap;font-weight:700}
+.fixed-cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-top:16px}
+.fixed-cmp .arrow{font-family:"Bangers";font-size:2.4rem}
+.fixed-cmp .panel{font-size:.9rem;padding:16px}
+.tipbox{border:4px solid #111;background:#111;color:#fff;padding:16px 18px}
+.tipbox ol{margin:.3em 0 0;padding-left:1.3em}
+.rules-found{font-size:.88rem;margin:.5em 0 0;padding-left:1.2em}
+
+/* case 4 */
+.judge{display:grid;gap:18px}
+.jcard{border:4px solid #111;background:#fff;padding:16px 18px;box-shadow:6px 6px 0 #111}
+.jcard .ref{font-size:.95rem}
+.jcard .acts{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.jcard textarea{display:block;width:100%;box-sizing:border-box;margin:10px 0 4px;font:inherit;font-size:.95rem;line-height:1.7;color:#111;background:#fff;border:3px solid #111;padding:.55em .75em;min-height:3.6em;resize:none;overflow:hidden;box-shadow:4px 4px 0 #111}
+.jcard textarea::placeholder{color:#888}
+.jcard textarea:focus{outline:3px dashed #111;outline-offset:3px}
+.jcard .verdict{margin-top:10px;font-weight:700;border-left:8px solid #111;padding:.3em .8em;background:#f3f3f0}
+.cert-form input,.refl input{font:inherit;border:3px solid #111;padding:.4em .55em;width:100%;background:#fff}
+.links a{font-size:.85rem;font-weight:700;margin-right:12px}
+
+/* exam */
+#exam{max-width:1000px}
+.lockwall{position:relative;border:4px dashed #111;padding:40px 24px;text-align:center;background:#fff;overflow:hidden}
+.lockwall .lockimg{width:260px;height:180px;margin:0 auto 20px}
+.lockwall .big{font-family:"Bangers";font-size:3rem;line-height:1}
+.qstage{border:4px solid #111;background:#fff;box-shadow:8px 8px 0 #111;position:relative}
+.qtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:4px solid #111;padding:10px 16px;font-weight:900}
+.qtop .combo{font-family:"Bangers";font-size:1.3rem}
+.qtop .grow{flex:1}
+.qtop label{font-weight:700;font-size:.85rem;display:flex;gap:.3em;align-items:center}
+.qbody{display:grid;grid-template-columns:200px 1fr;gap:22px;padding:22px}
+.qbody .boss{height:200px}
+.qprompt{font-weight:900;font-size:1.12rem}
+.qkind{display:inline-block;border:2px solid #111;font-size:.75rem;padding:0 .5em;margin-bottom:.5em;font-weight:900}
+.opts{display:grid;gap:10px;margin:16px 0}
+.opt{cursor:pointer;text-align:left;border:3px solid #111;background:#fff;padding:.65em .9em;font-weight:700;box-shadow:4px 4px 0 #111;transition:transform .1s}
+.opt:hover:not(:disabled){transform:translate(-2px,-2px)}
+.opt.sel{background:#111;color:#fff}
+.opt:disabled{opacity:.35;text-decoration:line-through;box-shadow:none;cursor:not-allowed}
+.opts.tf{grid-template-columns:1fr 1fr}
+.opts.tf .opt{font-size:1.4rem;text-align:center}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.bucket{border:4px solid #111;min-height:120px;padding:34px 10px 10px;position:relative;background:#fff}
+.bucket h5{position:absolute;top:6px;left:10px;margin:0;font-size:.95rem}
+.bucket .bin{display:flex;flex-wrap:wrap;gap:10px}
+.pool{display:flex;flex-wrap:wrap;gap:10px;min-height:62px;padding:10px;border:3px solid #111;background:#f6f6f3;margin-top:12px}
+.qcard{border:3px solid #111;background:#fff;padding:.45em .8em;font-weight:700;box-shadow:4px 4px 0 #111}
+.slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.oslot{flex:1;min-width:120px;min-height:70px;border:3px dashed #111;position:relative;padding:22px 6px 6px;display:flex;justify-content:center;align-items:center}
+.oslot>.n{position:absolute;top:2px;left:6px;font-family:"Bangers";font-size:1.1rem}
+.qfind{font-size:1.08rem;line-height:2.2;border:3px solid #111;padding:14px 16px;margin-top:12px;background:#fff}
+.qfind .seg{cursor:pointer}
+.qfind .seg:hover{background:#eee}
+.qfind .seg.marked{background:#111;color:#fff}
+.conf{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 6px;font-weight:700;font-size:.9rem}
+.conf button{cursor:pointer;border:3px solid #111;background:#fff;font-weight:700;padding:.25em .7em}
+.conf button.sel{background:#111;color:#fff}
+.qact{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.fb{margin:0 22px 22px;border:4px solid #111;display:grid;grid-template-columns:170px 1fr;gap:18px;padding:16px;position:relative;background:#fff}
+.fb .pic{height:170px}
+.fb .head{font-family:"Bangers";font-size:2.2rem;line-height:1}
+.fb .hintb{margin-top:6px}
+.evi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.evi>div{border:3px solid #111;padding:10px 12px;font-size:.9rem}
+.evi .x{background:repeating-linear-gradient(-45deg,#f0f0ec 0 6px,#fff 6px 12px)}
+.evi b{display:block}
+.lesson{border-left:8px solid #111;padding:.4em .9em;background:#f3f3f0;font-size:.9rem}
+.lesson .tm{font-family:"Bangers";font-size:1.1rem}
+.vhost{border:3px dashed #111;padding:12px 14px;margin-top:12px}
+.flash{animation:flash .6s}
+@keyframes flash{0%{background:#111}100%{background:transparent}}
+
+/* report */
+.report{border:5px solid #111;background:#fff;box-shadow:10px 10px 0 #111;padding:26px;position:relative}
+.report h2{font-size:2rem;font-weight:900}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.kpi{border:3px solid #111;padding:10px;text-align:center}
+.kpi b{display:block;font-family:"Bangers";font-size:2.4rem;line-height:1}
+.kpi span{font-size:.82rem;font-weight:700}
+.bars{display:grid;gap:10px;margin:14px 0}
+.barrow{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;font-weight:700;font-size:.9rem}
+.barrow .bt{height:22px;border:3px solid #111;position:relative}
+.barrow .bt i{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(-45deg,#111 0 3px,#fff 3px 6px);transition:width 1s cubic-bezier(.3,1.2,.5,1)}
+.wlist{display:grid;gap:12px}
+.witem{border:3px solid #111;padding:12px 14px}
+.witem.blind{border-width:5px;border-style:double}
+.witem .flag{display:inline-block;background:#111;color:#fff;font-size:.75rem;font-weight:900;padding:0 .5em;margin-bottom:4px}
+.bigstamp{position:absolute;right:26px;top:22px;border:7px double #111;border-radius:50%;width:150px;height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:1.35rem;transform:rotate(-12deg);background:#fff}
+.cold{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.cert-form,.refl{display:grid;gap:10px;margin-top:14px}
+#certCanvas{width:100%;max-width:720px;border:3px solid #111;display:block;margin-top:14px}
+#backToReport{position:fixed;right:20px;bottom:20px;z-index:60}
+.ending{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:30px}
+.ending .mframe{height:300px}
+footer{position:relative;z-index:1;border-top:4px solid #111;background:#fff;padding:30px 24px 40px;padding-left:196px;font-size:.82rem}
+footer p{margin:.3em 0;padding-left:2.2em;text-indent:-2.2em;word-break:break-word}
+
+@media (max-width:1199px){
+  #nav{transform:translateX(-110%);transition:transform .3s;width:230px;box-shadow:8px 0 0 #111}
+  #nav.open{transform:none}
+  main{padding-left:0}
+  footer{padding-left:24px}
+  #hud .navbtn{display:inline-block;padding:.25em .6em;box-shadow:3px 3px 0 #888}
+  /* 平板：右側圖自動縮小為 65%、突出距離縮為 20%，避免蓋到內容 */
+  .float{--k:.65;--ko:.2}
+  .float.f-r{opacity:.9}
+  .float.f-l,.float.f-r2{display:none}
+}
+@media (max-width:820px){
+  .cover{grid-template-columns:1fr;padding-top:30px}
+  .cover-art{height:52vh}
+  .cover-bubble{right:auto;left:0;top:auto;bottom:40%}
+  .g2,.g3,.thoughts,.srcs,.folders,.kpis,.ending{grid-template-columns:1fr 1fr}
+  .flips{grid-template-columns:1fr 1fr}
+  .span2{grid-column:span 2}
+  .qbody{grid-template-columns:1fr}
+  .qbody .boss{height:150px;width:150px}
+  .fb{grid-template-columns:1fr}
+  .fb .pic{height:150px;width:150px}
+  .fixed-cmp{grid-template-columns:1fr}
+  .fixed-cmp .arrow{transform:rotate(90deg);justify-self:center}
+  #hud .brand,.hud-badges,.rank{display:none}
+  .float.f-r{display:none}
+}
+@media (max-width:560px){
+  .g2,.g3,.thoughts,.srcs,.folders,.kpis,.ending,.flips,.scn .pair,.evi,.buckets,  .span2,  .case{padding:70px 16px 50px}
+  .case-head{grid-template-columns:1fr}
+  .flip{height:300px}
+  .bigstamp{position:relative;right:auto;top:auto;margin:0 0 10px auto;width:110px;height:110px;font-size:1rem}
+  .strip .word{font-size:3.6rem}
+  .barrow{grid-template-columns:80px 1fr 46px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div id="wipe"></div>
+
+<!-- ======================= COVER ======================= -->
+<section id="start">
+  <div class="speed"></div>
+  <div class="cover">
+    <div>
+      <div class="chip" style="margin-bottom:14px"><i class="t-source"></i>APA 文獻偵探社・見習偵探招募中</div>
+      <h1><span class="apa">APA7</span>真相只有一個</h1>
+      <p class="tagline">研究室裡一篇論文的參考文獻離奇失蹤、格式全亂。蒐集作者、日期、題名、來源四大線索，破解五個案件，升級為首席文獻偵探。</p>
+      <button class="btn go" id="goBtn">找真相 →</button>
+    </div>
+    <div class="cover-art">
+      <!-- 封面圖・左上（images/cover-01.png）：改 style 調位置／大小 -->
+      <div class="fimg cimg" style="--top:0; --left:-20%; --w:50%; --h:30%; --rot:5deg;" data-depth="18"><img data-img="cover-01" alt=""></div>
+      <!-- 封面圖・主視覺（images/cover-02.png）：改 style 調位置／大小 -->
+      <div class="fimg cimg" style="--top:4%; --right:0; --w:90%; --h:88%; --rot:2deg;" data-depth="8"><img data-img="cover-02" alt=""></div>
+      <!-- 封面圖・左下（images/cover-03.png）：改 style 調位置／大小 -->
+      <div class="fimg cimg" style="--bottom:2%; --left:-20%; --w:60%; --h:38%; --rot:-6deg;" data-depth="26"><img data-img="cover-03" alt=""></div>
+      <div class="bubble tail-r cover-bubble" data-depth="34">犯人……就是那筆格式錯誤的文獻！</div>
+    </div>
+  </div>
+  <div class="scroll-cue">點「找真相」開始辦案</div>
+</section>
+
+<!-- ======================= HUD / NAV ======================= -->
+<div id="hud" class="hidden">
+  <button class="btn ghost navbtn" id="navBtn" aria-label="案件導覽">☰</button>
+  <div class="brand">APA 文獻偵探社</div>
+  <div class="pbar"><span style="font-weight:900;white-space:nowrap">破案進度</span><div class="track" id="track"><span></span><span></span><span></span><span></span><span></span></div><span class="pct" id="pct">0%</span></div>
+  <div class="hud-badges" id="hudBadges"></div>
+  <span class="rank" id="rank">見習偵探</span>
+  <span class="pts" id="pts">0 PTS</span>
+</div>
+<nav id="nav" class="hidden" aria-label="案件導覽">
+  <h4>案件導覽</h4>
+  <div id="navList"></div>
+  <button class="reset" id="resetBtn">重置所有進度</button>
+</nav>
+
+<main id="main" class="hidden">
+
+<!-- ======================= CASE 0 ======================= -->
+<section class="case" id="case0">
+  <!-- 漂浮圖・右上（images/float-01.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:40px; --right:-100px; --w:300px; --h:300px; --pos:center;" data-speed=".22" data-rot="3"><div class="fimg"><img data-img="float-01" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-02.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-230px; --w:300px; --h:250px; --pos:center;" data-speed="-.14" data-rot="-4"><div class="fimg"><img data-img="float-02" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">FILE 00</div>
+    <div><h2>案件零：偵探社報到</h2><p class="lead">APA 7 是什麼？為什麼要引用？四大線索與第 7 版重點修訂</p></div>
+  </header>
+
+  <div class="grid g3">
+    <div class="panel span2 tilt-l">
+      <div class="speaker">
+        <div><div class="mframe face"><img data-img="p4" alt="社長"></div><div class="who">社長</div></div>
+        <div class="bubble tail-l">見習偵探，你來得正好！研究室裡有篇論文的參考文獻離奇失蹤、格式全亂……想破案，先把 APA 7 的基本功練起來。每破一案就能拿到一枚徽章！</div>
+      </div>
+    </div>
+    <div class="panel tilt-r"><span class="tag">情報</span><h3>APA 7 是什麼？</h3><p style="margin:0">美國心理學會（APA）制定的學術寫作格式，第 7 版於 2020 年出版，是教育、心理、社會科學最常用的引用規範。</p></div>
+    <div class="panel"><span class="tag">動機</span><h3>為什麼要引用？</h3><p style="margin:0"><b>學術誠信：</b>標明哪些想法來自他人。<br><b>可追溯：</b>讀者能依線索找到同一份原始資料。</p></div>
+    <div class="panel span2"><span class="tag">暖身小測</span>
+      <div class="warm" id="warm"></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:1.5rem;font-weight:900;margin-top:40px">四大線索翻卡 <span class="note" style="font-weight:500">（先想再翻！之後每一案都沿用同一套網點色碼）</span></h3>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <span class="chip"><i class="t-author"></i>作者＝點狀網點</span>
+    <span class="chip"><i class="t-date"></i>日期＝斜線網點</span>
+    <span class="chip"><i class="t-title"></i>題名＝交叉網點</span>
+    <span class="chip"><i class="t-source"></i>來源＝實黑</span>
+  </div>
+  <div class="flips" id="flips"></div>
+
+  <div class="thoughts">
+    <div class="think"><b>第 7 版重點 ①</b><br>三位以上作者，第一次引用就寫 <b>et al.</b>／<b>等</b></div>
+    <div class="think"><b>第 7 版重點 ②</b><br>專書<b>不再列出版地</b>，只寫出版社</div>
+    <div class="think"><b>第 7 版重點 ③</b><br>DOI 改寫成網址：<b>https://doi.org/…</b></div>
+  </div>
+
+  <div class="closebar" data-close="0"><div class="need">結案條件：完成暖身小測＋翻開 4 張線索卡 <b class="cnt">0/7</b></div><button class="btn closeBtn" disabled>結案 ✔</button><div class="stamp">結案<small>線索收集者</small></div></div>
+</section>
+
+<div class="strip"><div class="speed"></div><div class="word" data-speedx=".6">WHO SAID IT?! 這句話是誰說的？</div></div>
+
+<!-- ======================= CASE 1 ======================= -->
+<section class="case" id="case1">
+  <!-- 漂浮圖・右上（images/float-03.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:40px; --right:-210px; --w:400px; --h:300px; --pos:center;" data-speed=".2" data-rot="-3"><div class="fimg"><img data-img="float-03" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-04.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-260px; --w:300px; --h:250px; --pos:center;" data-speed="-.16" data-rot="4"><div class="fimg"><img data-img="float-04" alt=""></div></div>
+  <!-- 漂浮圖・右下（images/float-05.png）：改 style 調位置／大小 -->
+  <div class="float f-r2" style="--top:780px; --right:-200px; --w:190px; --h:240px; --pos:center;" data-speed=".3" data-rot="5"><div class="fimg"><img data-img="float-05" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">FILE 01</div>
+    <div><h2>案件一：「這句話是誰說的？」</h2><p class="lead">內文引用：敘述式 vs 括號式、作者人數、機構作者、直接引用、多筆文獻</p></div>
+  </header>
+  <div class="grid g2">
+    <div class="panel tilt-l"><span class="tag">敘述式</span><p style="margin:0">作者放進句子裡：<br><b>Wang (2021)</b> 指出…… ／ <b>王小明（2021）</b>指出……<br>兩位作者用 <b>and</b>／<b>與</b></p></div>
+    <div class="panel tilt-r"><span class="tag">括號式</span><p style="margin:0">作者與年份放在句尾括號：<br>……<b>(Wang, 2021)</b>。 ／ ……<b>（王小明，2021）</b>。<br>兩位作者用 <b>&amp;</b>／<b>、</b></p></div>
+  </div>
+  <div class="bubble" style="margin:10px 0 40px;max-width:640px"><b>偵訊規則：</b>每格有兩位證人說了同一句話，其中一句寫錯了。點出寫錯的那個對話泡泡！</div>
+  <div id="scenes"></div>
+  <div class="closebar" data-close="1"><div class="need">結案條件：揪出 6 句錯誤證詞 <b class="cnt">0/6</b></div><button class="btn closeBtn" disabled>結案 ✔</button><div class="stamp">結案<small>引用達人</small></div></div>
+</section>
+
+<div class="strip"><div class="speed"></div><div class="word" data-speedx="-.6">IDENTIFY! 嫌疑文獻身分鑑定</div></div>
+
+<!-- ======================= CASE 2 ======================= -->
+<section class="case" id="case2">
+  <!-- 漂浮圖・右上（images/float-06.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:40px; --right:-210px; --w:400px; --h:300px; --pos:center;" data-speed=".2" data-rot="3"><div class="fimg"><img data-img="float-06" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-07.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-230px; --w:300px; --h:250px; --pos:center;" data-speed="-.18" data-rot="-3"><div class="fimg"><img data-img="float-07" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">FILE 02</div>
+    <div><h2>案件二：「嫌疑文獻身分鑑定」</h2><p class="lead">六大類型格式模板、排序規則、關鍵觀念：放在網路上 ≠ 網頁格式</p></div>
+  </header>
+
+  <div class="panel" style="margin-top:26px"><span class="tag">任務 A・線索拼圖</span>
+    <p style="margin-top:0">把四塊線索拖到正確位置，拼出一筆完整的期刊論文參考文獻。<span class="label-fake">虛構・僅供練習</span><br><span class="note">也可以「點一下線索片，再點空格」放入。</span></p>
+    <div class="puz-ref" id="puzSlots"></div>
+    <div class="pieces" id="puzPieces"></div>
+  </div>
+
+  <div class="panel" style="margin-top:34px"><span class="tag">情報・格式模板</span>
+    <div style="overflow-x:auto"><table class="tpl">
+      <tr><th>類型</th><th>格式模板（網點色碼對照）</th></tr>
+      <tr><td>期刊論文</td><td class="hang"><span class="u-author">Author, A. A., &amp; Author, B. B.</span> <span class="u-date">(Year).</span> <span class="u-title">Title of article.</span> <span class="u-source"><i>Journal Name</i>, <i>Vol</i>(Issue), pages. https://doi.org/xxxx</span></td></tr>
+      <tr><td>專書</td><td class="hang"><span class="u-author">Author, A. A.</span> <span class="u-date">(Year).</span> <span class="u-title"><i>Title of book</i> (2nd ed.).</span> <span class="u-source">Publisher.</span></td></tr>
+      <tr><td>編輯書章節</td><td class="hang"><span class="u-author">Author, A. A.</span> <span class="u-date">(Year).</span> <span class="u-title">Title of chapter.</span> <span class="u-source">In E. E. Editor (Ed.), <i>Title of book</i> (pp. xx–xx). Publisher.</span></td></tr>
+      <tr><td>網頁</td><td class="hang"><span class="u-author">Author or Organization.</span> <span class="u-date">(Year, Month Day).</span> <span class="u-title"><i>Title of page</i>.</span> <span class="u-source">Site Name. URL</span></td></tr>
+      <tr><td>學位論文</td><td class="hang"><span class="u-author">Author, A. A.</span> <span class="u-date">(Year).</span> <span class="u-title"><i>Title of thesis</i></span> <span class="u-source">[Master's thesis, University]. Database. URL</span></td></tr>
+      <tr><td>研究報告</td><td class="hang"><span class="u-author">Organization.</span> <span class="u-date">(Year).</span> <span class="u-title"><i>Title of report</i> (Report No. xx).</span> <span class="u-source">Publisher. URL</span></td></tr>
+      <tr><td>範例</td><td class="ex hang">American Psychological Association. (2020). <i>Publication manual of the American Psychological Association</i> (7th ed.). https://doi.org/10.1037/0000165-000 <span class="label-real">真實文獻・官方手冊</span></td></tr>
+    </table></div>
+    <p class="note" style="margin-bottom:0">排序：中文文獻在前、英文在後；中文依第一作者姓氏筆畫，英文依姓氏字母排序。中文書名與期刊名的標示方式（如粗體）請依系所或期刊體例。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="shout" style="justify-self:center"><div>放在網路上<br>≠ 網頁格式！</div></div>
+    <div class="bubble tail-l" style="align-self:center">從資料庫下載的期刊 PDF，身分還是<b>期刊論文</b>。決定類型的是文獻本身（有沒有期刊名、卷期、出版社、報告編號），不是你在哪裡拿到它。</div>
+  </div>
+
+  <div class="panel"><span class="tag">任務 B・嫌疑犯檔案卡</span>
+    <p style="margin-top:0">把 6 張來源截圖拖進正確的類型檔案夾。放錯會彈回並給你線索。</p>
+    <div class="srcs" id="srcCards"></div>
+    <div class="folders" id="folders"></div>
+  </div>
+
+  <div class="closebar" data-close="2"><div class="need">結案條件：完成線索拼圖＋6 張檔案卡歸檔 <b class="cnt">0/10</b></div><button class="btn closeBtn" disabled>結案 ✔</button><div class="stamp">結案<small>身分鑑定師</small></div></div>
+</section>
+
+<div class="strip"><div class="speed"></div><div class="word" data-speedx=".6">ZOOM IN! 細節鑑識科</div></div>
+
+<!-- ======================= CASE 3 ======================= -->
+<section class="case" id="case3">
+  <!-- 漂浮圖・右上（images/float-08.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:80px; --right:-210px; --w:300px; --h:300px; --pos:center;" data-speed=".22" data-rot="-3"><div class="fimg"><img data-img="float-08" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-09.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-230px; --w:300px; --h:250px; --pos:center;" data-speed="-.15" data-rot="3"><div class="fimg"><img data-img="float-09" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">FILE 03</div>
+    <div><h2>案件三：「細節鑑識科」</h2><p class="lead">斜體、大小寫、標點、DOI、懸掛縮排、無日期</p></div>
+  </header>
+  <div class="grid g3">
+    <div class="panel"><span class="tag">斜體</span>期刊名＋<b>卷數</b>斜體；文章名與<b>期數</b>不斜體；書名斜體。</div>
+    <div class="panel"><span class="tag">大小寫</span>文章／書名用 sentence case（只有首字、冒號後首字、專有名詞大寫）；期刊名用 title case。</div>
+    <div class="panel"><span class="tag">DOI／標點</span>寫成 https://doi.org/…，不加「DOI:」，尾端不加句點。中文用全形標點。</div>
+    <div class="panel"><span class="tag">排版</span>參考文獻使用<b>懸掛縮排 0.5 英吋</b>（第二行起內縮）。</div>
+    <div class="panel span2"><span class="tag">無日期</span>找不到日期時寫 <b>(n.d.)</b>／<b>（無日期）</b>，不要自己猜年份。</div>
+  </div>
+  <div class="bubble" style="max-width:660px;margin:10px 0 40px"><b>鑑識規則：</b>每件證物藏著 3 個錯誤。拿放大鏡掃過去，點出錯處——點對就會亮起並顯示規則。</div>
+  <div id="exhibits"></div>
+  <div class="closebar" data-close="3"><div class="need">結案條件：兩件證物各找出 3 個錯誤 <b class="cnt">0/6</b></div><button class="btn closeBtn" disabled>結案 ✔</button><div class="stamp">結案<small>鑑識專家</small></div></div>
+</section>
+
+<div class="strip"><div class="speed"></div><div class="word" data-speedx="-.6">REAL OR FAKE? 真偽大追查</div></div>
+
+<!-- ======================= CASE 4 ======================= -->
+<section class="case" id="case4">
+  <!-- 漂浮圖・右上（images/float-10.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:40px; --right:-210px; --w:400px; --h:300px; --pos:center;" data-speed=".2" data-rot="3"><div class="fimg"><img data-img="float-10" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-11.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-200px; --w:300px; --h:250px; --pos:center;" data-speed="-.16" data-rot="-4"><div class="fimg"><img data-img="float-11" alt=""></div></div>
+  <!-- 漂浮圖・右下（images/float-12.png）：改 style 調位置／大小 -->
+  <div class="float f-r2" style="--top:780px; --right:-200px; --w:190px; --h:240px; --pos:center;" data-speed=".28" data-rot="-2"><div class="fimg"><img data-img="float-12" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">FINAL</div>
+    <div><h2>結案任務：「真偽大追查」</h2><p class="lead">辨識 AI 捏造的文獻：回到原始來源查證，查無此文獻就不引用</p></div>
+  </header>
+
+  <div class="panel" style="margin-top:26px"><span class="tag">任務・AI 給的文獻，是真是假？</span>
+    <p style="margin-top:0">實際點連結到 Google Scholar 或 DOI 查證，判定「真」或「查無此文獻」，並寫下判斷依據。</p>
+    <div class="judge" id="judge"></div>
+  </div>
+
+  <div class="closebar" data-close="4"><div class="need">結案條件：完成 3 筆真偽判斷 <b class="cnt">0/3</b></div><button class="btn closeBtn" disabled>結案 ✔</button><div class="stamp">結案<small>真偽獵人</small></div></div>
+</section>
+
+<div class="strip"><div class="speed"></div><div class="word" data-speedx=".6">FINAL EXAM! 結案考核</div></div>
+
+<!-- ======================= EXAM ======================= -->
+<section class="case" id="exam">
+  <!-- 漂浮圖・右上（images/float-13.png）：改 style 調位置／大小 -->
+  <div class="float f-r" style="--top:40px; --right:-210px; --w:230px; --h:300px; --pos:center;" data-speed=".2" data-rot="-3"><div class="fimg"><img data-img="float-13" alt=""></div></div>
+  <!-- 漂浮圖・左側（images/float-14.png）：改 style 調位置／大小 -->
+  <div class="float f-l" style="--top:420px; --left:-230px; --w:300px; --h:250px; --pos:center;" data-speed="-.15" data-rot="3"><div class="fimg"><img data-img="float-14" alt=""></div></div>
+  <header class="case-head">
+    <div class="file">EXAM</div>
+    <div><h2>結案考核：首席文獻偵探資格測驗</h2><p class="lead">精熟標準：正確率 80%（6 題至少 5 題），且「文獻類型」與「真偽查核」必須答對。正確率以第一次作答計。</p></div>
+  </header>
+  <div id="lock" class="lockwall">
+    <div class="speed" style="opacity:.25"></div>
+    <div class="mframe lockimg"><img data-img="p8" alt=""></div>
+    <div class="big">LOCKED</div>
+    <p style="font-weight:700">集滿 5 枚徽章才能解鎖結案考核。目前：<span id="lockCount">0</span>/5</p>
+  </div>
+  <div id="examIntro" class="hidden">
+    <div class="grid g2">
+      <div class="panel"><div class="speaker"><div><div class="mframe face"><img data-img="p4" alt=""></div><div class="who">社長</div></div><div class="bubble tail-l">恭喜集滿 5 枚徽章！我會一題一題丟出「待鑑定證物」。答對有破案點數，連續答對 3 題觸發 <b>Combo ×2</b>！</div></div></div>
+      <div class="panel"><h3>考核規則</h3><p style="margin:0">每題先選「作答信心」再按「提交鑑定」。<br>第一次答錯：給線索，再答一次。<br>第二次答錯：看證物對照卡＋做一題類題。</p></div>
+    </div>
+    <button class="btn" id="startExam" style="font-size:1.3rem">開始結案考核 →</button>
+  </div>
+  <div id="stage" class="hidden"></div>
+  <div id="report" class="hidden"></div>
+</section>
+
+</main>
+
+<footer id="foot" class="hidden">
+  <b>教材參考來源</b>
+  <p>American Psychological Association. (2020). <i>Publication manual of the American Psychological Association</i> (7th ed.). https://doi.org/10.1037/0000165-000</p>
+  <p>American Psychological Association. (n.d.). <i>Reference examples</i>. APA Style. https://apastyle.apa.org/style-grammar-guidelines/references/examples</p>
+  <p>American Psychological Association. (n.d.). <i>In-text citations</i>. APA Style. https://apastyle.apa.org/style-grammar-guidelines/citations</p>
+  <p>University of Western Australia Library. (n.d.). <i>Referencing style – APA 7th: Introduction</i>. https://guides.library.uwa.edu.au/apa</p>
+  <p>中華民國體育學會期刊編輯組（2021）。APA 格式中文書寫與圖表製作之指引。https://www.cappr.ntnu.edu.tw/wp-content/uploads/0_APA7_0.pdf</p>
+  <p>臺灣數學教育期刊編審委員會（2022）。論文撰寫體例。https://tjme.ime.ntnu.edu.tw/upload/journal/prog/ddc2bc73_20230428.pdf</p>
+  <p>《教育與多元文化研究》編輯委員會（無日期）。論文撰稿格式。https://education.ndhu.edu.tw/var/file/17/1017/img/4462/469261923.pdf</p>
+  <p style="text-indent:0;padding:0;margin-top:1em">漫畫插圖為教學示意，版權屬原作者所有。標示「虛構・僅供練習」之文獻為練習用，請勿引用。</p>
+</footer>
+
+<button class="btn hidden" id="backToReport">← 回到結案報告書</button>
+<button id="bgmBtn" aria-pressed="false" aria-label="主題曲開關" title="柯南主題曲 開／關"><span class="eq"><i></i><i></i><i></i></span><span>♪</span><span class="lbl">主題曲</span><b class="st">OFF</b></button>
+<div id="bgmPlayer" class="off" aria-label="主題曲播放器"><div class="cap"><span>♪ 柯南主題曲 播放中</span><span><button id="bgmMini" title="關閉主題曲">✕</button></span></div><div class="vol"><span>音量</span><input type="range" id="bgmVol" min="0" max="100" value="40" aria-label="音量"></div></div>
+<div id="resetModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="rmT"><div class="modal-box"><div class="shout"><div id="rmT">確定要重置<br>所有破案進度？</div></div><p>徽章、破案點數、作答紀錄與已完成的互動都會清空，回到「見習偵探」。</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="rmNo">取消</button><button class="btn" id="rmYes">確定重置</button></div></div></div>
+<div class="toast" id="toast"><div class="bubble" id="toastMsg"></div></div>
+
+<script>
+(()=>{
+'use strict';
+const PRISTINE_MAIN=document.getElementById('main').innerHTML;
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+
+/* ---------------- images: images/<name>.<ext>, with fallback ---------------- */
+const EXTS=['png','jpg','jpeg','webp'];
+function loadImg(img){
+  const names=img.dataset.img.split(',').map(s=>s.trim());
+  const c=[];names.forEach(n=>EXTS.forEach(e=>c.push(`images/${n}.${e}`)));
+  let i=0;
+  const slot=img.closest('.fimg');
+  if(slot){slot.dataset.file=`images/${names[0]}.png`;slot.classList.remove('empty')}
+  img.onerror=()=>{i++; if(i<c.length){img.src=c[i]}else{
+    if(slot){slot.classList.add('empty');return}
+    const d=document.createElement('div');d.className='ph';
+    d.innerHTML=`<span>放入 images/${esc(names[names.length-1])}.png</span>`;img.replaceWith(d);}};
+  img.src=c[0];
+}
+if(/[?&]slots\b/.test(location.search))document.documentElement.classList.add('show-slots');
+$$('img[data-img]').forEach(loadImg);
+function imgHTML(name,alt=''){return `<img data-img="${name}" alt="${esc(alt)}">`}
+function hydrate(root){$$('img[data-img]',root).forEach(i=>{if(!i.src)loadImg(i)})}
+
+/* ---------------- sound ---------------- */
+let actx=null;
+function sfx(kind){
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime;
+    const tone=(f,s,d,type='square',v=.12)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,t+s);g.gain.setValueAtTime(v,t+s);g.gain.exponentialRampToValueAtTime(.001,t+s+d);o.connect(g).connect(actx.destination);o.start(t+s);o.stop(t+s+d)};
+    if(kind==='ok'){tone(660,0,.12);tone(990,.1,.22)}
+    else if(kind==='stamp'){tone(110,0,.25,'triangle',.4);tone(70,.02,.3,'sine',.4)}
+    else if(kind==='bad'){tone(180,0,.25,'sawtooth',.08)}
+    else if(kind==='flip'){tone(520,0,.06,'triangle',.08)}
+    else if(kind==='win'){[523,659,784,1046].forEach((f,i)=>tone(f,i*.12,.25))}
+  }catch(e){}
+}
+
+/* ---------------- BGM（主題曲）----------------
+   會依序嘗試以下音源，第一個能播放的就使用：
+   1. audio/bgm.mp3（把 MP3 放進 audio 資料夾，最穩定、可離線）
+   2. Dropbox 直接連結（需連網）
+   想換歌：替換 audio/bgm.mp3，或修改下面 BGM_SOURCES 的網址 */
+const BGM_SOURCES=[
+  'audio/bgm.mp3',
+  'https://www.dropbox.com/scl/fi/2dmi3dg6plwpg9ixrwfxn/bgm-005.mp3?rlkey=tywly09t8h2dby49jev71hjku&raw=1'
+];
+const BGM={el:null,on:false,loading:false,vol:40,src:0};
+try{const v=localStorage.getItem('apa7-bgm-vol');if(v!==null)BGM.vol=+v}catch(e){}
+function bgmUI(){
+  const b=document.getElementById('bgmBtn');b.classList.toggle('on',BGM.on&&!BGM.loading);b.setAttribute('aria-pressed',BGM.on);
+  b.querySelector('.st').textContent=BGM.loading?'…':(BGM.on?'ON':'OFF');
+  document.getElementById('bgmPlayer').classList.toggle('off',!BGM.on);
+}
+function bgmFail(){
+  BGM.on=false;BGM.loading=false;bgmUI();
+  toast('<b>主題曲無法播放</b>。請確認 <b>audio/bgm.mp3</b> 已放在 index.html 旁的 audio 資料夾裡，或檢查 Dropbox 連結是否仍公開分享。',6000);
+}
+function bgmPlay(){
+  const a=BGM.el;BGM.loading=true;bgmUI();
+  a.volume=BGM.vol/100;
+  const pr=a.play();
+  if(pr&&pr.then)pr.then(()=>{BGM.loading=false;bgmUI()}).catch(err=>{
+    if(err&&err.name==='NotAllowedError'){BGM.on=false;BGM.loading=false;bgmUI();toast('瀏覽器擋下自動播放，請再按一次主題曲按鈕。',3000)}
+  });
+}
+function bgmInit(){
+  const a=new Audio();a.loop=true;a.preload='auto';BGM.el=a;
+  a.addEventListener('error',()=>{
+    BGM.src++;
+    if(BGM.src<BGM_SOURCES.length){a.src=BGM_SOURCES[BGM.src];if(BGM.on)bgmPlay()}
+    else bgmFail();
+  });
+  a.addEventListener('playing',()=>{BGM.loading=false;bgmUI()});
+  a.addEventListener('waiting',()=>{if(BGM.on){BGM.loading=true;bgmUI()}});
+  a.src=BGM_SOURCES[0];
+}
+function bgmToggle(){
+  if(!BGM.el)bgmInit();
+  BGM.on=!BGM.on;
+  if(BGM.on){if(BGM.src>=BGM_SOURCES.length){BGM.src=0;BGM.el.src=BGM_SOURCES[0]}bgmPlay()}
+  else{BGM.el.pause();BGM.loading=false;bgmUI()}
+}
+document.getElementById('bgmBtn').addEventListener('click',bgmToggle);
+document.getElementById('bgmMini').addEventListener('click',()=>{if(BGM.on)bgmToggle()});
+const volEl=document.getElementById('bgmVol');volEl.value=BGM.vol;
+volEl.addEventListener('input',()=>{BGM.vol=+volEl.value;try{localStorage.setItem('apa7-bgm-vol',BGM.vol)}catch(e){};if(BGM.el)BGM.el.volume=BGM.vol/100});
+bgmUI();
+
+/* ---------------- toast ---------------- */
+let toastT;
+function toast(html,ms=3200){const t=$('#toast');$('#toastMsg').innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
+
+/* ---------------- state ---------------- */
+const CASES=[
+  {id:'case0',name:'案件零',title:'偵探社報到',badge:'線索收集者',ch:'線'},
+  {id:'case1',name:'案件一',title:'這句話是誰說的？',badge:'引用達人',ch:'引'},
+  {id:'case2',name:'案件二',title:'嫌疑文獻身分鑑定',badge:'身分鑑定師',ch:'鑑'},
+  {id:'case3',name:'案件三',title:'細節鑑識科',badge:'鑑識專家',ch:'識'},
+  {id:'case4',name:'結案任務',title:'真偽大追查',badge:'真偽獵人',ch:'真'},
+];
+const KEY='apa7-detective-v1';
+const S={badges:[],points:0,mastered:false};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function rankName(){if(S.mastered)return'首席文獻偵探';const b=S.badges.length;return b>=4?'資深偵探':b>=2?'初級偵探':'見習偵探'}
+
+function renderHUD(){
+  const n=S.badges.length;
+  $$('#track span').forEach((s,i)=>s.classList.toggle('on',i<n));
+  $('#pct').textContent=(n*20)+'%';
+  $('#hudBadges').innerHTML=CASES.map((c,i)=>`<span class="mb ${S.badges.includes(i)?'on':''}" title="${c.badge}">${c.ch}</span>`).join('');
+  $('#rank').textContent=rankName();
+  $('#pts').textContent=S.points+' PTS';
+  $('#navList').innerHTML=CASES.map((c,i)=>{const d=S.badges.includes(i);return `<a href="#${c.id}" class="${d?'done':''}">${d?'✔ ':''}${c.name}<small>${c.title}・${d?c.badge:'待偵辦'}</small></a>`}).join('')+
+    `<a href="#exam" class="${n<5?'locked':(S.mastered?'done':'')}">${S.mastered?'✔ ':''}結案考核<small>${n<5?'集滿 5 枚徽章解鎖':(S.mastered?'首席文獻偵探':'已解鎖')}</small></a>`;
+  $('#lockCount').textContent=n;
+  const unlocked=n>=5;
+  $('#lock').classList.toggle('hidden',unlocked);
+  if(unlocked && $('#stage').classList.contains('hidden') && $('#report').classList.contains('hidden')) $('#examIntro').classList.remove('hidden');
+}
+
+/* progress per case */
+let prog;
+const need={0:7,1:6,2:10,3:6,4:3};
+function tick(ci,key){
+  prog[ci].add(key);
+  const bar=$(`.closebar[data-close="${ci}"]`);
+  $('.cnt',bar).textContent=`${Math.min(prog[ci].size,need[ci])}/${need[ci]}`;
+  if(prog[ci].size>=need[ci] && !S.badges.includes(ci)) $('.closeBtn',bar).disabled=false;
+}
+function closeCase(ci){
+  if(!S.badges.includes(ci)){S.badges.push(ci);save()}
+  const bar=$(`.closebar[data-close="${ci}"]`);
+  const st=$('.stamp',bar);st.classList.remove('on');void st.offsetWidth;st.classList.add('on');
+  $('.closeBtn',bar).disabled=true;$('.closeBtn',bar).textContent='已結案';
+  sfx('stamp');setTimeout(()=>sfx('win'),300);
+  renderHUD();
+  const c=CASES[ci];
+  toast(`<b>結案！</b>獲得徽章「${c.badge}」，偵探階級：<b>${rankName()}</b>${S.badges.length===5?'<br>五枚徽章集滿，結案考核已解鎖！':''}`,3800);
+}
+
+/* ---------------- start screen ---------------- */
+const startEl=$('#start');
+startEl.addEventListener('pointermove',e=>{
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;
+  $$('[data-depth]',startEl).forEach(el=>{const d=+el.dataset.depth;el.style.translate=`${-x*d}px ${-y*d}px`});
+});
+function begin(skipAnim){
+  const show=()=>{
+    startEl.classList.add('hidden');
+    ['#hud','#nav','#main','#foot'].forEach(s=>$(s).classList.remove('hidden'));
+    window.scrollTo(0,0);renderHUD();
+  };
+  if(skipAnim){show();return}
+  sfx('stamp');
+  const w=$('#wipe');w.classList.remove('go');void w.offsetWidth;w.classList.add('go');
+  setTimeout(show,520);
+}
+$('#goBtn').addEventListener('click',()=>begin(false));
+$('#navBtn').addEventListener('click',()=>$('#nav').classList.toggle('open'));
+$('#nav').addEventListener('click',e=>{if(e.target.closest('a'))$('#nav').classList.remove('open')});
+function resetAll(){
+  try{localStorage.removeItem(KEY)}catch(e){}
+  S.badges=[];S.points=0;S.mastered=false;
+  const m=$('#main');m.innerHTML=PRISTINE_MAIN;hydrate(m);
+  $('#backToReport').classList.add('hidden');$('#toast').classList.remove('on');
+  initContent();renderHUD();
+  $('#nav').classList.remove('open');
+  const toCover=()=>{
+    ['#hud','#nav','#main','#foot'].forEach(x=>$(x).classList.add('hidden'));
+    startEl.classList.remove('hidden');
+    $$('[data-depth]',startEl).forEach(el=>el.style.translate='');
+    window.scrollTo({top:0,behavior:'auto'});
+    toast('<b>進度已全部重置！</b>點「找真相」重新開始辦案吧。',2600);
+    $('#goBtn').focus({preventScroll:true});
+  };
+  if(reduce){toCover();return}
+  sfx('stamp');
+  const w=$('#wipe');w.classList.remove('go');void w.offsetWidth;w.classList.add('go');
+  setTimeout(toCover,520);
+}
+$('#resetBtn').addEventListener('click',()=>{$('#resetModal').classList.remove('hidden');$('#rmNo').focus()});
+$('#rmNo').addEventListener('click',()=>$('#resetModal').classList.add('hidden'));
+$('#rmYes').addEventListener('click',()=>{$('#resetModal').classList.add('hidden');resetAll()});
+$('#resetModal').addEventListener('click',e=>{if(e.target.id==='resetModal')$('#resetModal').classList.add('hidden')});
+
+/* ---------------- parallax ---------------- */
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function para(){
+  const vh=innerHeight;
+  $$('[data-speed]').forEach(el=>{
+    const r=el.parentElement.getBoundingClientRect();
+    if(r.bottom<-400||r.top>vh+400)return;
+    const off=(r.top+Math.min(r.height,1400)/2-vh/2)*-parseFloat(el.dataset.speed);
+    el.style.transform=`translate3d(0,${off.toFixed(1)}px,0) rotate(${el.dataset.rot||0}deg)`;
+  });
+  $$('[data-speedx]').forEach(el=>{
+    const r=el.parentElement.getBoundingClientRect();
+    if(r.bottom<0||r.top>vh)return;
+    const off=(r.top-vh/2)*parseFloat(el.dataset.speedx);
+    el.style.transform=`translate3d(${off.toFixed(1)-200}px,-50%,0)`;
+  });
+  requestAnimationFrame(para);
+}
+if(!reduce)requestAnimationFrame(para);
+
+/* ---------------- generic drag (pointer + tap) ---------------- */
+let picked=null;
+function dragify(card,zoneSel,scope,onDrop,onTap){
+  card.classList.add('dcard');card.tabIndex=0;
+  card._zone=zoneSel;card._scope=scope;card._drop=onDrop;
+  let sx=null,sy=0,moved=false,over=null;
+  card.addEventListener('pointerdown',e=>{
+    if(card.classList.contains('locked'))return;
+    sx=e.clientX;sy=e.clientY;moved=false;
+    try{card.setPointerCapture(e.pointerId)}catch(_){}
+  });
+  card.addEventListener('pointermove',e=>{
+    if(sx===null)return;
+    const dx=e.clientX-sx,dy=e.clientY-sy;
+    if(!moved&&Math.hypot(dx,dy)>6){moved=true;card.classList.add('dragging');if(picked){picked.classList.remove('picked');picked=null}}
+    if(!moved)return;
+    card.style.transform=`translate(${dx}px,${dy}px) rotate(-3deg)`;
+    card.style.pointerEvents='none';
+    const z=document.elementFromPoint(e.clientX,e.clientY)?.closest(zoneSel);
+    card.style.pointerEvents='';
+    const zz=z&&scope.contains(z)?z:null;
+    if(over&&over!==zz)over.classList.remove('over');
+    over=zz;if(over)over.classList.add('over');
+  });
+  const end=e=>{
+    if(sx===null)return;sx=null;
+    if(over)over.classList.remove('over');
+    if(!moved){
+      if(onTap&&onTap(card))return;
+      if(picked===card){card.classList.remove('picked');picked=null}
+      else{if(picked)picked.classList.remove('picked');picked=card;card.classList.add('picked')}
+      return;
+    }
+    card.classList.remove('dragging');
+    card.style.pointerEvents='none';
+    const z=document.elementFromPoint(e.clientX,e.clientY)?.closest(zoneSel);
+    card.style.pointerEvents='';
+    const ok=(z&&scope.contains(z))?onDrop(card,z):false;
+    if(ok){card.style.transform=''}
+    else{card.style.transition='transform .45s cubic-bezier(.3,1.7,.5,1)';card.style.transform='';setTimeout(()=>card.style.transition='',460)}
+    over=null;
+  };
+  card.addEventListener('pointerup',end);
+  card.addEventListener('pointercancel',()=>{sx=null;card.classList.remove('dragging');card.style.transform=''});
+  card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();if(onTap&&onTap(card))return;if(picked)picked.classList.remove('picked');picked=card;card.classList.add('picked');toast('已選取，請點選要放入的位置',1600)}});
+}
+document.addEventListener('click',e=>{
+  if(!picked||e.target.closest('.dcard'))return;
+  const z=e.target.closest(picked._zone);
+  if(z&&picked._scope.contains(z)){
+    const c=picked;c.classList.remove('picked');picked=null;
+    if(!c._drop(c,z)){c.classList.add('bad');setTimeout(()=>c.classList.remove('bad'),420)}
+  }
+});
+
+/* ================= CONTENT (re-runnable for reset) ================= */
+function initContent(){
+prog={0:new Set(),1:new Set(),2:new Set(),3:new Set(),4:new Set()};
+if(picked){picked=null}
+$$('.closebar').forEach(b=>{
+  const ci=+b.dataset.close;
+  $('.closeBtn',b).addEventListener('click',()=>closeCase(ci));
+  if(S.badges.includes(ci)){$('.stamp',b).classList.add('on');$('.closeBtn',b).disabled=true;$('.closeBtn',b).textContent='已結案'}
+});
+/* ================= CASE 0 ================= */
+const WARM=[
+  {q:'直接複製網路上的一段話放進報告，不標出處也沒關係。',a:false,fb:'不行！沒標出處就等於把別人的想法當成自己的，這是抄襲。'},
+  {q:'內文引用與文末參考文獻必須一一對應。',a:true,fb:'沒錯，內文出現的每一筆，文末都要找得到，反之亦然。'},
+  {q:'AI 列出的文獻看起來很專業，就一定是真的。',a:false,fb:'AI 可能捏造作者、題名、DOI，一定要回到原始來源查核。'},
+];
+$('#warm').innerHTML=WARM.map((w,i)=>`<div class="row" data-i="${i}"><p>${i+1}. ${w.q}</p><button class="mini" data-v="1">O</button><button class="mini" data-v="0">X</button><div class="wfb" aria-live="polite"></div></div>`).join('');
+$('#warm').addEventListener('click',e=>{
+  const b=e.target.closest('.mini');if(!b)return;
+  const row=b.closest('.row'),w=WARM[+row.dataset.i];
+  $$('.mini',row).forEach(x=>x.classList.toggle('sel',x===b));
+  const ok=(b.dataset.v==='1')===w.a;
+  $('.wfb',row).innerHTML=`<b>${ok?'答對了！':'再想想：'}</b>${w.fb}`;
+  sfx(ok?'ok':'bad');tick(0,'w'+row.dataset.i);
+});
+const CLUES=[
+  {k:'author',name:'作者',q:'這篇文章是誰寫的？',rule:'英文寫「姓, 名縮寫.」；兩位以上以逗號分隔，最後一位前加 &。機構作者寫全名。中文寫全名，作者間以頓號分隔。',ex:['Wang, M., &amp; Lee, J.','王小明、李大華']},
+  {k:'date',name:'日期',q:'它是什麼時候發表的？',rule:'年份放括號、緊接作者後。網頁可寫到月日。找不到日期寫 n.d.／無日期。中文用全形括號。',ex:['(2023).　(2023, May 4).　(n.d.).','（2023）。（無日期）。']},
+  {k:'title',name:'題名',q:'它叫什麼名字？',rule:'文章與書名用 sentence case；文章名不斜體，書名、網頁標題、報告名斜體。',ex:['Learning to cite in graduate school.','<i>Publication manual of the American Psychological Association</i>']},
+  {k:'source',name:'來源',q:'在哪裡可以找到它？',rule:'期刊：期刊名、卷(期)、頁碼、DOI。專書：出版社（不寫出版地）。網頁：網站名稱與 URL。',ex:['<i>Journal of Learning</i>, <i>12</i>(3), 45–67. https://doi.org/xxxx','教育研究集刊，68（2），1–30。']},
+];
+$('#flips').innerHTML=CLUES.map((c,i)=>`<button class="flip" data-i="${i}" aria-label="線索卡：${c.name}"><div class="in">
+  <div class="fc front"><div class="tone t-${c.k}"><b>${c.name}</b></div><div class="q">「${c.q}」</div><div class="hint">CLUE 0${i+1}・點一下翻面 ↻</div></div>
+  <div class="fc back"><h4>線索：${c.name}</h4><div>${c.rule}</div>${c.ex.map(x=>`<code>${x}</code>`).join('')}</div>
+</div></button>`).join('');
+$('#flips').addEventListener('click',e=>{const f=e.target.closest('.flip');if(!f)return;f.classList.toggle('on');sfx('flip');tick(0,'f'+f.dataset.i)});
+
+/* ================= CASE 1 ================= */
+const SCENES=[
+  {sit:'情況 1：三位以上作者（括號式）',bad:'(Smith, Lee, &amp; Wang, 2023)',good:'(Smith et al., 2023)',why:'第 7 版：三位以上作者，<b>第一次引用就寫 et al.</b>，不必先全列。'},
+  {sit:'情況 2：兩位作者（敘述式）',bad:'Lee &amp; Kim (2020) 指出……',good:'Lee and Kim (2020) 指出……',why:'敘述式（放在句子裡）用 <b>and</b>；括號式才用 <b>&amp;</b>：(Lee &amp; Kim, 2020)。'},
+  {sit:'情況 3：機構作者第一次出現，之後想用簡稱',bad:'(APA, 2020)',good:'(American Psychological Association [APA], 2020)',why:'機構作者第一次要寫全名並以<b>方括號</b>附簡稱，之後才能寫 (APA, 2020)。'},
+  {sit:'情況 4：直接引用原文',bad:'"Citation is a map for readers" (Wang, 2021).',good:'"Citation is a map for readers" (Wang, 2021, p. 15).',why:'直接引用要加<b>頁碼</b>（p. / pp.）。40 字以上改用獨立成段的區塊引文，不加引號。'},
+  {sit:'情況 5：中文三位以上作者（括號式）',bad:'（王小明、李大華、陳美玲，2022）',good:'（王小明等，2022）',why:'中文三位以上作者寫「第一作者＋<b>等</b>」，部分期刊用「等人」，請依投稿體例。標點用全形。'},
+  {sit:'情況 6：同時引用多筆文獻',bad:'(Wang, 2021, Chen, 2019)',good:'(Chen, 2019; Wang, 2021)',why:'多筆文獻以<b>分號</b>分隔，並依第一作者姓氏<b>字母順序</b>排列。'},
+];
+$('#scenes').innerHTML=SCENES.map((s,i)=>{
+  const flip=Math.random()<.5;
+  const A=flip?s.good:s.bad,B=flip?s.bad:s.good;
+  return `<div class="scn" data-i="${i}"><span class="sit">${s.sit}</span><div class="pair">
+   <button class="bubble cbub" data-bad="${flip?0:1}"><span class="w">證人 A</span>${A}</button>
+   <button class="bubble tail-r cbub" data-bad="${flip?1:0}"><span class="w">證人 B</span>${B}</button>
+  </div><div class="why hidden"></div></div>`}).join('');
+$('#scenes').addEventListener('click',e=>{
+  const b=e.target.closest('.cbub');if(!b)return;
+  const sc=b.closest('.scn'),s=SCENES[+sc.dataset.i];
+  if(b.dataset.bad==='1'){
+    b.classList.add('caught');$$('.cbub',sc).forEach(x=>{if(x!==b)x.classList.add('okay')});
+    const w=$('.why',sc);w.classList.remove('hidden');w.innerHTML=`<b>抓到了！為什麼不行：</b>${s.why}<br>正確寫法：<b>${s.good}</b>`;
+    sfx('ok');tick(1,sc.dataset.i);
+  }else{
+    b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');sfx('bad');
+    toast('這位證人說得沒錯，再看看另一句哪裡怪怪的？',2000);
+  }
+});
+
+/* ================= CASE 2 ================= */
+const PUZ=[
+  {k:'author',lab:'作者',t:'Wang, M., &amp; Lee, J.'},
+  {k:'date',lab:'日期',t:'(2023).'},
+  {k:'title',lab:'題名',t:'Learning to cite in graduate school.'},
+  {k:'source',lab:'來源',t:'<i>Journal of Learning</i>, <i>12</i>(3), 45–67. https://doi.org/10.0000/jl.2023.003'},
+];
+$('#puzSlots').innerHTML=PUZ.map(p=>`<div class="slot" data-k="${p.k}"><span class="lab">${p.lab}？</span></div>`).join('');
+$('#puzPieces').innerHTML=shuffle(PUZ).map(p=>`<div class="piece t-${p.k}" data-k="${p.k}"><span>${p.t}</span></div>`).join('');
+const puzScope=$('#puzSlots').parentElement;
+$$('.piece').forEach(pc=>dragify(pc,'.slot',puzScope,(card,slot)=>{
+  if(slot.classList.contains('filled'))return false;
+  if(slot.dataset.k!==card.dataset.k){toast(`這塊是「${PUZ.find(p=>p.k===card.dataset.k).lab}」線索，APA 順序是：作者 → 日期 → 題名 → 來源。`);sfx('bad');return false}
+  slot.innerHTML='';slot.appendChild(card);slot.classList.add('filled');card.classList.add('locked');card.style.transform='';sfx('ok');tick(2,'p'+card.dataset.k);
+  if($$('#puzSlots .filled').length===4)toast('<b>拼圖完成！</b>作者 → 日期 → 題名 → 來源，這就是 APA 參考文獻的骨架。');
+  return true;
+}));
+const TYPES=[
+  {k:'journal',n:'期刊論文'},{k:'book',n:'專書'},{k:'chapter',n:'編輯書章節'},
+  {k:'web',n:'網頁'},{k:'thesis',n:'學位論文'},{k:'report',n:'研究報告'}];
+const SRC=[
+  {k:'journal',bar:'library-database.edu／全文 PDF 下載',h:'《教育研究集刊》第 68 卷第 2 期',b:'頁 1–30｜DOI：10.xxxx/xxxx｜從學校圖書館資料庫下載',clue:'有期刊名稱、卷期與頁碼嗎？下載的地方不決定類型。'},
+  {k:'book',bar:'某出版社官網／書籍介紹頁',h:'《研究方法入門》（第 3 版）',b:'作者：林○○｜出版社：○○文化｜ISBN 978-…',clue:'有 ISBN、出版社、版次，整本書由作者撰寫……'},
+  {k:'report',bar:'gov.tw／研究報告 PDF',h:'國中生數位閱讀調查報告',b:'委託單位：○○部｜報告編號：No. 113-05',clue:'機構發行、有報告編號，這是哪一種？'},
+  {k:'thesis',bar:'臺灣博碩士論文知識加值系統',h:'研究生學術寫作焦慮之研究',b:'學位類別：碩士｜指導教授：○○○｜畢業學年度：112',clue:'看到「學位類別」與「指導教授」了嗎？'},
+  {k:'web',bar:'news-site.com／新聞文章',h:'AI 寫作工具進入大學課堂',b:'記者 ○○○｜2024 年 3 月 5 日｜網址 https://…',clue:'沒有期刊卷期、沒有出版社，是網站上的單一頁面。'},
+  {k:'chapter',bar:'編輯書／第 4 章',h:'第 4 章 同儕回饋與寫作',b:'章節作者：陳○○｜主編 (Ed.)：王○○｜pp. 55–80',clue:'有「主編 Ed.」和章節頁碼，是一本書裡的一章。'},
+];
+const srcHTML=s=>`<div class="src" data-k="${s.k}"><div class="bar"><i></i><i></i><span>${s.bar}</span></div><div class="body"><b>${s.h}</b>${s.b}</div></div>`;
+$('#srcCards').innerHTML=shuffle(SRC).map(srcHTML).join('');
+$('#folders').innerHTML=TYPES.map(t=>`<div class="folder dz" data-k="${t.k}"><h5>${t.n}</h5></div>`).join('');
+const clsScope=$('#srcCards').parentElement;
+$$('#srcCards .src').forEach(card=>dragify(card,'.folder',clsScope,(c,f)=>{
+  const s=SRC.find(x=>x.k===c.dataset.k);
+  if(f.dataset.k!==c.dataset.k){toast(`<b>彈回！</b>線索：${s.clue}`);sfx('bad');return false}
+  f.appendChild(c);c.classList.add('locked');c.style.transform='';sfx('ok');tick(2,'c'+c.dataset.k);
+  toast(`歸檔成功：<b>${TYPES.find(t=>t.k===f.dataset.k).n}</b>`,1500);
+  return true;
+}));
+
+/* ================= CASE 3 ================= */
+const EXH=[
+  {name:'證物 A',segs:[
+    {t:'Lin, Y.'},{t:' (2021). ',p:1},{t:'Online Learning Motivation.',e:'文章題名要用 sentence case（只有第一個字大寫）：應為 Online learning motivation.'},{t:' ',p:1},{t:'<i>Journal of Learning</i>, '},{t:'<i>8</i>(<i>2</i>)',e:'期數被斜體了：卷數斜體、期數不斜體，應為 <i>8</i>(2)'},{t:', 10–25. ',p:1},{t:'DOI: 10.1000/jl.2021.002.',e:'DOI 要寫成 https://doi.org/10.1000/jl.2021.002：不加「DOI:」前綴，結尾也不加句點'}],
+    fixed:'Lin, Y. (2021). Online learning motivation. <i>Journal of Learning</i>, <i>8</i>(2), 10–25. https://doi.org/10.1000/jl.2021.002'},
+  {name:'證物 B',segs:[
+    {t:'Wang, M., Lee, J.',e:'兩位作者，最後一位前要加 &amp;：Wang, M., &amp; Lee, J.'},{t:' (2023). ',p:1},{t:'<i>Learning To Cite In Graduate School</i>.',e:'期刊文章名不斜體，且用 sentence case：Learning to cite in graduate school.'},{t:' ',p:1},{t:'Journal of Learning, 12',e:'期刊名與卷數要斜體：<i>Journal of Learning</i>, <i>12</i>'},{t:'(3), 45–67. ',p:1},{t:'https://doi.org/10.1000/jl.2023.003'}],
+    fixed:'Wang, M., &amp; Lee, J. (2023). Learning to cite in graduate school. <i>Journal of Learning</i>, <i>12</i>(3), 45–67. https://doi.org/10.1000/jl.2023.003'},
+];
+const coarse=matchMedia('(pointer:coarse)').matches;
+$('#exhibits').innerHTML=EXH.map((x,i)=>`<div class="exh" data-i="${i}" style="margin-bottom:40px">
+  <div class="exhibit ${coarse?'touch':''}"><span class="hdr">${x.name}<span class="label-fake" style="border-color:#fff">虛構・僅供練習</span></span>
+   <div class="txt">${x.segs.map((s,j)=>s.p?s.t:`<span class="seg${s.t.length<=1?' dot':''}" tabindex="0" data-j="${j}" title="點這裡鑑定">${s.t}</span>`).join('')}</div>
+   <div class="lens"><div class="clone"></div></div></div>
+  <div class="ex-meta"><span>🔍 已找到 <b class="fc">0</b>/3</span><button class="btn ghost exhint" style="padding:.2em .8em;font-size:.85rem">給我線索</button><span class="note hintmsg"></span></div>
+  <ol class="rules-found"></ol>
+  <div class="solved hidden">
+   <div class="fixed-cmp"><div class="panel"><span class="tag">修正前</span>${x.segs.map(s=>s.t).join('')}</div><div class="arrow">→</div><div class="panel"><span class="tag">修正後</span><div class="hang">${x.fixed}</div></div></div>
+  </div></div>`).join('')+
+  `<div class="tipbox"><b>破案口訣</b><ol><li>期刊名、卷數要斜體；文章名、期數不斜體。</li><li>DOI 一律 https://doi.org/ 開頭，尾巴不加句點。</li><li>文章名 sentence case；兩位以上作者最後一位前加 &amp;。</li></ol></div>`;
+$$('.exh').forEach(box=>{
+  const x=EXH[+box.dataset.i],ex=$('.exhibit',box),lens=$('.lens',box),clone=$('.clone',lens),txt=$('.txt',box);
+  let found=0;
+  const hit=seg=>{
+    if(seg.classList.contains('found'))return;
+    const s=x.segs[+seg.dataset.j];
+    if(s.e){seg.classList.add('found');found++;$('.fc',box).textContent=found;$('.rules-found',box).insertAdjacentHTML('beforeend',`<li>${s.e}</li>`);sfx('ok');tick(3,box.dataset.i+'-'+seg.dataset.j);
+      if(found===3){$('.solved',box).classList.remove('hidden');toast(`<b>${x.name}鑑識完成！</b>看看修正前後的對照。`)}}
+    else{seg.classList.remove('nope');void seg.offsetWidth;seg.classList.add('nope');sfx('bad');toast('這裡沒問題，換個地方照照看。',1400)}
+  };
+  txt.addEventListener('click',e=>{const s=e.target.closest('.seg');if(s)hit(s)});
+  $('.exhint',box).addEventListener('click',()=>{
+    const left=$$('.seg',box).filter(sg=>x.segs[+sg.dataset.j].e&&!sg.classList.contains('found'));
+    if(!left.length)return;
+    left.forEach(sg=>{sg.classList.remove('hinted');void sg.offsetWidth;sg.classList.add('hinted')});
+    const tips={'(':'看看括號裡的期數字體','.':'看看這筆文獻的最後一個字元','DOI':'看看 DOI 的寫法'};
+    $('.hintmsg',box).textContent='還剩 '+left.length+' 處，虛線框閃爍的地方有問題！';
+  });
+  txt.addEventListener('keydown',e=>{if(e.key==='Enter'){const s=e.target.closest('.seg');if(s)hit(s)}});
+  if(coarse)return;
+  const Z=1.8,R=75;
+  ex.addEventListener('pointerenter',()=>{lens.style.display='block'});
+  ex.addEventListener('pointerleave',()=>{lens.style.display='none'});
+  ex.addEventListener('pointermove',e=>{
+    const r=ex.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+    clone.innerHTML=txt.innerHTML;clone.style.width=r.width+'px';
+    lens.style.left=(px-R)+'px';lens.style.top=(py-R)+'px';
+    clone.style.transform=`translate(${-(px*Z-R)}px,${-(py*Z-R)}px) scale(${Z})`;
+  });
+});
+
+/* ================= CASE 4 ================= */
+const JUDGE=[
+  {ref:'Hartwell, D. K., &amp; Moreno, L. P. (2022). Citation anxiety and AI-assisted referencing among first-year graduate students. <i>Journal of Academic Integrity Studies</i>, <i>14</i>(3), 201–219. https://doi.org/10.5555/jais.2022.0143',
+   q:'Citation anxiety and AI-assisted referencing among first-year graduate students',doi:'https://doi.org/10.5555/jais.2022.0143',real:false,
+   why:'查無此文獻：Google Scholar 找不到這組作者與題名，DOI 也無法連到這篇文章。這是為練習而<b>虛構</b>的「AI 幻覺文獻」，格式再漂亮也不能引用。'},
+  {ref:'Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. <i>Cognitive Science</i>, <i>12</i>(2), 257–285. https://doi.org/10.1207/s15516709cog1202_4',
+   q:'Cognitive load during problem solving: Effects on learning',doi:'https://doi.org/10.1207/s15516709cog1202_4',real:true,
+   why:'真實文獻：作者、題名、年份、期刊卷期都能在 Google Scholar 查到，DOI 連到同一篇文章。'},
+  {ref:'American Psychological Association. (2020). <i>Publication manual of the American Psychological Association</i> (7th ed.). https://doi.org/10.1037/0000165-000',
+   q:'Publication manual of the American Psychological Association 7th edition',doi:'https://doi.org/10.1037/0000165-000',real:true,
+   why:'真實文獻：APA 官方出版手冊，DOI 可連到 APA 的出版頁面。'},
+];
+$('#judge').innerHTML=JUDGE.map((j,i)=>`<div class="jcard" data-i="${i}"><b>AI 給的文獻 #${i+1}</b><div class="ref hang">${j.ref}</div>
+  <div class="links"><a href="https://scholar.google.com/scholar?q=${encodeURIComponent(j.q)}" target="_blank" rel="noopener">到 Google Scholar 查 ↗</a><a href="${j.doi}" target="_blank" rel="noopener">點 DOI ↗</a></div>
+  <textarea rows="2" placeholder="我查了...發現...找不到..." aria-label="判斷依據"></textarea>
+  <div class="acts"><button class="btn ghost" data-v="1">判定：真</button><button class="btn ghost" data-v="0">判定：查無此文獻</button></div>
+  <div class="verdict hidden"></div></div>`).join('');
+$('#judge').addEventListener('input',e=>{const t=e.target;if(t.tagName==='TEXTAREA'){t.style.height='auto';t.style.height=t.scrollHeight+6+'px'}});
+$('#judge').addEventListener('click',e=>{
+  const b=e.target.closest('[data-v]');if(!b)return;
+  const card=b.closest('.jcard'),j=JUDGE[+card.dataset.i],ta=$('textarea',card);
+  const ok=(b.dataset.v==='1')===j.real;
+  const v=$('.verdict',card);v.classList.remove('hidden');
+  v.innerHTML=`<b>${ok?'判斷正確！':'判斷有誤，再查一次：'}</b>${j.why}`;
+  sfx(ok?'ok':'bad');if(ok)tick(4,'j'+card.dataset.i);
+});
+
+/* ================= EXAM ================= */
+const CONCEPTS={cite:'內文引用',type:'文獻類型',format:'格式細節',truth:'真偽查核'};
+const QS=[
+ {id:1,concept:'cite',case:'case1',type:'mc',kind:'選擇題',
+  prompt:'證人 Smith、Lee 與 Wang 三人在 2023 年發表研究，第一次以括號式引用時，正確寫法是？',
+  options:['(Smith, Lee, &amp; Wang, 2023)','(Smith et al., 2023)','(Smith et al. 2023)','(Smith &amp; others, 2023)'],answer:1,
+  hint:'數數看有幾位作者？第 7 版三位以上作者怎麼寫？年份前面要不要逗號？',
+  rule:'APA 7：三位以上作者第一次引用就寫「第一作者 et al.」，年份前加逗號。',
+  cmp:{x:'(Smith, Lee, &amp; Wang, 2023)',o:'(Smith et al., 2023)'},lesson:'第 6 版要先全列再縮寫；第 7 版三位以上一律從第一次就用 et al.。al. 有句點，後面接逗號再寫年份。',
+  variants:[
+   {prompt:'第一次引用機構作者 American Psychological Association，並打算之後使用簡稱，括號式應寫？',options:['(APA, 2020)','(American Psychological Association [APA], 2020)','(American Psychological Association (APA), 2020)','(A.P.A., 2020)'],answer:1,hint:'第一次出現時，讀者知道 APA 是誰嗎？簡稱要用哪種括號附上？',rule:'機構作者第一次寫全名並以方括號附簡稱，之後才可只寫簡稱。'},
+   {prompt:'Lee 與 Kim 兩位作者（2020），以「敘述式」引用時正確寫法是？',options:['Lee &amp; Kim (2020)','Lee and Kim (2020)','(Lee and Kim, 2020)','Lee, Kim (2020)'],answer:1,hint:'作者放在句子裡時，用 & 還是 and？',rule:'敘述式用 and，括號式才用 &。'}]},
+ {id:2,concept:'type',case:'case2',type:'tf',kind:'是非題',critical:true,
+  prompt:'「這篇期刊論文 PDF 是從學校圖書館資料庫下載的，所以參考文獻應該使用『網頁』格式。」',answer:false,
+  hint:'這份資料有期刊名稱和卷期嗎？下載的地方會改變它的身分嗎？',
+  rule:'文獻類型由文獻本身決定：有期刊名、卷期，就是期刊論文。放在網路上 ≠ 網頁格式。',
+  cmp:{x:'當成網頁：作者. (年). <i>題名</i>. 網站名. URL',o:'期刊論文：作者. (年). 題名. <i>期刊名</i>, <i>卷</i>(期), 頁碼. https://doi.org/…'},lesson:'先找身分線索：期刊名＋卷期→期刊；出版社＋ISBN→專書；學位類別→學位論文；報告編號→研究報告；以上皆無的單一網站頁面→網頁。',
+  variants:[
+   {prompt:'「從出版社網站閱讀的電子書，參考文獻仍使用專書格式。」',answer:true},
+   {prompt:'「從政府機關網站下載、有報告編號的研究報告 PDF，應使用網頁格式。」',answer:false}]},
+ {id:3,concept:'format',case:'case3',type:'sort2',kind:'配對題',
+  prompt:'把四張卡片拖進「要斜體」或「不斜體」檔案夾。',ex:'Wang, M. (2023). Title of the article. <i>Journal of Learning</i>, <i>12</i>(3), 45–67.',
+  buckets:['要斜體','不斜體'],items:[{t:'文章題名',b:1},{t:'期刊名稱',b:0},{t:'卷數',b:0},{t:'期數',b:1}],
+  hint:'仔細看範例：括號裡的期數有沒有斜？文章名呢？',
+  rule:'期刊名稱、卷數斜體；文章題名、期數不斜體。',
+  cmp:{x:'Title of the article. Journal of Learning, 12(<i>3</i>)',o:'Title of the article. <i>Journal of Learning</i>, <i>12</i>(3)'},lesson:'口訣：「期刊名連卷數一起斜，括號裡的期數站直」。專書則是書名斜體。',
+  variants:[
+   {ex:'',hint:'書名與期刊名稱都要斜體嗎？出版社呢？',rule:'專書書名、期刊名稱斜體；出版社、頁碼不斜體。',prompt:'專書與期刊混合：把四張卡片分到「要斜體」或「不斜體」。',items:[{t:'專書書名',b:0},{t:'出版社名稱',b:1},{t:'期刊名稱',b:0},{t:'頁碼',b:1}]},
+   {ex:'',hint:'章節是書的一部分，書名才是「容器」。',rule:'編輯書書名、卷數斜體；章節名稱、頁碼範圍不斜體。',prompt:'編輯書章節：把四張卡片分到「要斜體」或「不斜體」。',items:[{t:'章節名稱',b:1},{t:'編輯書書名',b:0},{t:'卷數',b:0},{t:'頁碼範圍 (pp.)',b:1}]}]},
+ {id:4,concept:'format',case:'case0',type:'order',kind:'排序題',
+  prompt:'將英文期刊參考文獻的元素拖進 1～5 格，排出正確順序。',
+  items:['作者','日期','題名','來源（期刊名、卷期、頁碼）','DOI'],
+  hint:'想想四大線索的順序：誰寫的 → 何時 → 叫什麼 → 在哪裡，DOI 放哪？',
+  rule:'作者 → 日期 → 題名 → 來源 → DOI。',
+  cmp:{x:'題名 → 作者 → 來源 → 日期 → DOI',o:'作者 → 日期 → 題名 → 來源 → DOI'},lesson:'四大線索固定順序是「誰、何時、什麼、哪裡」，DOI 永遠收在最後。',
+  variants:[
+   {hint:'一樣是「誰、何時、什麼、哪裡」。',rule:'專書：作者 → 日期 → 書名 → 出版社 → DOI。',prompt:'將英文專書參考文獻的元素排出正確順序。',items:['作者','日期','書名','出版社','DOI']},
+   {hint:'章節作者才是「誰」，編者與書名屬於「哪裡」。',rule:'章節：章節作者 → 日期 → 章節題名 → In 編者 (Ed.), 書名 (pp.) → 出版社。',prompt:'將編輯書章節參考文獻的元素排出正確順序。',items:['章節作者','日期','章節題名','編者與書名 (pp.)','出版社']}]},
+ {id:5,concept:'format',case:'case3',type:'find',kind:'情境找錯題',
+  prompt:'點出所有錯誤的片段（共 2 處），再提交鑑定。',
+  segs:[{t:'Chen, M.'},{t:' (2022). ',p:1},{t:'Learning Online.',e:1},{t:' ',p:1},{t:'<i>Computers &amp; Education</i>, <i>180</i>'},{t:', ',p:1},{t:'104–120.'},{t:' ',p:1},{t:'DOI: 10.1016/xxxx.',e:1}],
+  hint:'共有 2 處錯誤：看看文章題名的大小寫，以及最後 DOI 的寫法與結尾。',
+  rule:'文章題名用 sentence case；DOI 寫成 https://doi.org/10.1016/xxxx，不加「DOI:」前綴，尾端也不加句點。',
+  cmp:{x:'… Learning Online. … 104–120. DOI: 10.1016/xxxx.',o:'… Learning online. … 104–120. https://doi.org/10.1016/xxxx'},lesson:'第 7 版把 DOI 當成網址：一律 https://doi.org/ 開頭，結尾不加句點，避免連結失效。',
+  variants:[
+   {hint:'共有 2 處錯誤：看括號裡的期數字體，以及網址最後面。',rule:'期數不斜體；DOI 結尾不加句點。',prompt:'點出所有錯誤的片段（共 2 處）。',segs:[{t:'Lin, Y.'},{t:' (2021). ',p:1},{t:'Online learning motivation.'},{t:' ',p:1},{t:'<i>Journal of Learning</i>, '},{t:'<i>8</i>(<i>2</i>)',e:1},{t:', 10–25. ',p:1},{t:'https://doi.org/10.1000/xyz.',e:1}]},
+   {hint:'共有 2 處錯誤：文章名該不該斜體、大小寫對嗎？DOI 開頭呢？',rule:'文章名不斜體且用 sentence case；DOI 寫成 https://doi.org/…。',prompt:'點出所有錯誤的片段（共 2 處）。',segs:[{t:'Wang, M.'},{t:' (2023). ',p:1},{t:'<i>Learning To Cite</i>.',e:1},{t:' ',p:1},{t:'<i>Journal of Learning</i>, <i>12</i>'},{t:'(3), 45–67. ',p:1},{t:'doi:10.1000/jl.003',e:1}]}]},
+ {id:6,concept:'truth',case:'case4',type:'mc',kind:'情境判斷題',critical:true,
+  prompt:'AI 幫你列出一筆文獻，但 DOI 點不開，在 Google Scholar 也查不到作者與題名，你該怎麼辦？',
+  options:['直接放進參考文獻','刪掉 DOI 後照樣引用','到資料庫查核作者、題名、年份，查無則不引用並另找真實文獻','改成網頁格式就沒問題'],answer:2,
+  hint:'參考文獻的目的是讓讀者「找得到」。查不到的東西能讓讀者追溯嗎？',
+  rule:'參考文獻必須真實可追溯，查無來源的 AI 生成文獻不可引用。',
+  cmp:{x:'看起來格式正確 → 直接引用',o:'回到資料庫逐項查核 → 查無即不引用'},lesson:'AI 會「幻覺」出看似合理的作者、題名與 DOI。一律回到 Google Scholar、資料庫或出版社頁面查證後才引用。',
+  variants:[
+   {prompt:'AI 給的文獻在 Google Scholar 找得到題名，但年份與期刊名和 AI 給的不同，你應該？',options:['照 AI 給的資訊寫','以原始來源頁面的資訊為準更正後再引用','兩種年份都寫上','改用 n.d.'],answer:1,hint:'讀者會依哪一份資料去找文獻？',rule:'書目資訊一律以原始來源為準，AI 的版本只能當線索。'},
+   {prompt:'AI 給的 DOI 點開後，連到一篇完全不同主題的文章，你應該？',options:['只要 DOI 能開就照用','把題名改成 DOI 連到的那篇','視為不可靠來源，查無正確出處就不引用，另找真實文獻','刪掉 DOI 再引用'],answer:2}]},
+];
+const vIdx={};
+function variantOf(q){const i=vIdx[q.id]=((vIdx[q.id]??-1)+1)%q.variants.length;return Object.assign({},q,q.variants[i],{base:q,isVariant:true})}
+
+const EX={list:[],idx:0,attempt:1,results:[],combo:0,conf:null,mode:'main',cur:null,timer:null,timerOn:false};
+const CONF={high:'很有把握',mid:'不太確定',guess:'用猜的'};
+
+function renderQ(q,host){
+  host.innerHTML='';const st={};
+  if(q.type==='mc'||q.type==='tf'){
+    const opts=q.type==='tf'?[{t:'O',v:true},{t:'X',v:false}]:q.options.map((t,i)=>({t:`(${'ABCD'[i]}) ${t}`,v:i}));
+    host.innerHTML=`<div class="opts ${q.type==='tf'?'tf':''}">${opts.map((o,i)=>`<button class="opt" data-i="${i}">${o.t}</button>`).join('')}</div>`;
+    st.sel=null;
+    $$('.opt',host).forEach(b=>b.addEventListener('click',()=>{$$('.opt',host).forEach(x=>x.classList.toggle('sel',x===b));st.sel=opts[+b.dataset.i].v;st.onChange&&st.onChange()}));
+    st.ready=()=>st.sel!==null;
+    st.check=()=>st.sel===q.answer;
+    st.weaken=()=>{const b=$('.opt.sel',host);if(b){b.disabled=true;b.classList.remove('sel')}st.sel=null};
+    st.reveal=()=>{const i=opts.findIndex(o=>o.v===q.answer);$$('.opt',host).forEach(b=>b.classList.remove('sel'));$$('.opt',host)[i].classList.add('sel');$$('.opt',host).forEach(b=>b.style.pointerEvents='none')};
+  }
+  else if(q.type==='sort2'){
+    const items=q.items.map((it,i)=>({...it,i}));
+    host.innerHTML=(q.ex?`<div class="note" style="margin-top:8px">範例：${q.ex} <span class="label-fake">虛構・僅供練習</span></div>`:'')+
+      `<div class="pool dz">${shuffle(items).map(it=>`<div class="qcard" data-i="${it.i}">${it.t}</div>`).join('')}</div>
+       <div class="buckets">${q.buckets.map((b,i)=>`<div class="bucket dz" data-b="${i}"><h5>${b}</h5><div class="bin"></div></div>`).join('')}</div>`;
+    const pool=$('.pool',host);
+    $$('.qcard',host).forEach(c=>dragify(c,'.bucket,.pool',host,(card,z)=>{
+      if(z.classList.contains('pool')){pool.appendChild(card);delete card.dataset.at}else{$('.bin',z).appendChild(card);card.dataset.at=z.dataset.b}
+      st.onChange&&st.onChange();return true}));
+    st.ready=()=>$$('.qcard',host).every(c=>c.dataset.at!==undefined);
+    st.check=()=>$$('.qcard',host).every(c=>+c.dataset.at===items[+c.dataset.i].b);
+    st.weaken=()=>$$('.qcard',host).forEach(c=>{if(+c.dataset.at!==items[+c.dataset.i].b){pool.appendChild(c);delete c.dataset.at;c.classList.add('bad');setTimeout(()=>c.classList.remove('bad'),450)}});
+    st.reveal=()=>$$('.qcard',host).forEach(c=>{const b=items[+c.dataset.i].b;$(`.bucket[data-b="${b}"] .bin`,host).appendChild(c);c.dataset.at=b;c.classList.add('locked')});
+  }
+  else if(q.type==='order'){
+    host.innerHTML=`<div class="pool dz">${shuffle(q.items.map((t,i)=>({t,i}))).map(o=>`<div class="qcard" data-i="${o.i}">${o.t}</div>`).join('')}</div>
+      <div class="slots">${q.items.map((_,i)=>`<div class="oslot dz" data-s="${i}"><span class="n">${i+1}</span></div>`).join('')}</div>`;
+    const pool=$('.pool',host);
+    $$('.qcard',host).forEach(c=>dragify(c,'.oslot,.pool',host,(card,z)=>{
+      if(z.classList.contains('pool')){pool.appendChild(card)}
+      else{const ex=$('.qcard',z);if(ex&&ex!==card){const from=card.parentElement;if(from.classList.contains('oslot'))from.appendChild(ex);else pool.appendChild(ex)}z.appendChild(card)}
+      st.onChange&&st.onChange();return true},
+      card=>{if(card.parentElement.classList.contains('oslot')){pool.appendChild(card);st.onChange&&st.onChange();return true}return false}));
+    st.ready=()=>$$('.oslot',host).every(s=>$('.qcard',s));
+    st.check=()=>$$('.oslot',host).every((s,i)=>+$('.qcard',s)?.dataset.i===i);
+    st.weaken=()=>$$('.oslot',host).forEach((s,i)=>{const c=$('.qcard',s);if(c&&+c.dataset.i!==i){pool.appendChild(c);c.classList.add('bad');setTimeout(()=>c.classList.remove('bad'),450)}});
+    st.reveal=()=>{const cards=$$('.qcard',host);$$('.oslot',host).forEach((s,i)=>{const c=cards.find(x=>+x.dataset.i===i);s.appendChild(c);c.classList.add('locked')})};
+  }
+  else if(q.type==='find'){
+    host.innerHTML=`<div class="qfind">${q.segs.map((s,j)=>s.p?s.t:`<span class="seg${s.t.length<=1?' dot':''}" tabindex="0" data-j="${j}">${s.t}</span>`).join('')}</div><div class="note">提示：點一下標記、再點一下取消。<span class="label-fake">虛構・僅供練習</span></div>`;
+    const tog=e=>{const s=e.target.closest('.seg');if(!s)return;s.classList.toggle('marked');st.onChange&&st.onChange()};
+    $('.qfind',host).addEventListener('click',tog);
+    $('.qfind',host).addEventListener('keydown',e=>{if(e.key==='Enter')tog(e)});
+    st.ready=()=>$$('.seg.marked',host).length>0;
+    st.check=()=>$$('.seg',host).every(s=>s.classList.contains('marked')===!!q.segs[+s.dataset.j].e);
+    st.weaken=()=>$$('.seg.marked',host).forEach(s=>{if(!q.segs[+s.dataset.j].e){s.classList.remove('marked');s.classList.add('nope');setTimeout(()=>s.classList.remove('nope'),400)}});
+    st.reveal=()=>$$('.seg',host).forEach(s=>{s.classList.toggle('marked',!!q.segs[+s.dataset.j].e);s.style.pointerEvents='none'});
+  }
+  return st;
+}
+
+function startExam(mode,list){
+  EX.mode=mode;EX.list=list;EX.idx=0;EX.results=[];EX.combo=0;
+  $('#examIntro').classList.add('hidden');$('#report').classList.add('hidden');$('#backToReport').classList.add('hidden');
+  $('#stage').classList.remove('hidden');showQ();
+  $('#exam').scrollIntoView({behavior:reduce?'auto':'smooth'});
+}
+function showQ(){
+  const q=EX.list[EX.idx];EX.attempt=1;EX.conf=null;clearInterval(EX.timer);
+  const stage=$('#stage');
+  stage.innerHTML=`<div class="qstage">
+    <div class="qtop"><span>${EX.mode==='retake'?'補考偵訊室':'結案考核'}・證物 ${EX.idx+1}/${EX.list.length}</span><span class="grow"></span>
+     <span class="combo">${EX.combo>=3?'COMBO ×2 !!':'COMBO '+EX.combo}</span><span class="pts">${S.points} PTS</span>
+     <label><input type="checkbox" id="tmrOn" ${EX.timerOn?'checked':''}>倒數計時（選擇性）</label><span id="tmr"></span></div>
+    <div class="qbody">
+     <div><div class="mframe boss"><img data-img="p4" alt="社長"></div></div>
+     <div>
+      <div class="bubble tail-l" style="margin-bottom:16px"><span class="qkind">${q.kind}${q.isVariant?'・變化題':''}</span><div class="qprompt">${q.prompt}</div></div>
+      <div id="qhost"></div>
+      <div class="conf">作答信心：${Object.entries(CONF).map(([k,v])=>`<button data-c="${k}">${v}</button>`).join('')}</div>
+      <div class="qact"><button class="btn" id="submit" disabled>提交鑑定</button><span class="note" id="needs">請先作答並選擇作答信心</span></div>
+     </div>
+    </div>
+    <div id="fb"></div>
+  </div>`;
+  hydrate(stage);
+  EX.cur=renderQ(q,$('#qhost'));
+  const upd=()=>{const ok=EX.cur.ready()&&EX.conf;$('#submit').disabled=!ok;$('#needs').textContent=ok?'':'請先作答並選擇作答信心'};
+  EX.cur.onChange=upd;
+  $$('.conf button',stage).forEach(b=>b.addEventListener('click',()=>{$$('.conf button',stage).forEach(x=>x.classList.toggle('sel',x===b));EX.conf=b.dataset.c;upd()}));
+  $('#submit').addEventListener('click',submit);
+  $('#tmrOn').addEventListener('change',e=>{EX.timerOn=e.target.checked;runTimer()});
+  runTimer();
+}
+function runTimer(){
+  clearInterval(EX.timer);const el=$('#tmr');if(!el)return;
+  if(!EX.timerOn){el.textContent='';return}
+  let t=60;el.textContent='⏱ 60s';
+  EX.timer=setInterval(()=>{t--;el.textContent=t>0?`⏱ ${t}s`:'時間到，仍可繼續作答';if(t<=0)clearInterval(EX.timer)},1000);
+}
+function submit(){
+  const q=EX.list[EX.idx],ok=EX.cur.check(),fb=$('#fb');
+  const baseId=(q.base||q).id;
+  if(ok){
+    let pts=0;
+    if(EX.attempt===1){EX.combo++;pts=10*(EX.combo>=3?2:1);S.points+=pts;save();renderHUD()}
+    EX.results.push({q,id:baseId,correct:EX.attempt===1,conf:EX.conf});
+    fb.innerHTML=`<div class="fb"><div class="mframe pic"><img data-img="p14" alt=""></div><div>
+      <div class="head">${EX.attempt===1?'破案成功！':'經提示後破案！'}</div>
+      <p><b>為什麼對：</b>${q.rule}</p>
+      <p>${EX.attempt===1?`<b>+${pts} 破案點數</b>${EX.combo>=3?'（COMBO ×2 加倍中！）':''}`:'第一次作答未答對，正確率不計分，但你已經抓到重點了。'}</p>
+      <button class="btn" id="nextQ">${EX.idx+1<EX.list.length?'下一份證物 →':'查看結案報告書 →'}</button></div>
+      <div class="stamp on" style="top:-30px">破案<small>CASE CLOSED</small></div></div>`;
+    sfx('stamp');setTimeout(()=>sfx('ok'),200);
+    lockStage();hydrate(fb);$('#nextQ').addEventListener('click',next);
+    $('.qtop .combo').textContent=EX.combo>=3?'COMBO ×2 !!':'COMBO '+EX.combo;$('.qtop .pts').textContent=S.points+' PTS';
+    return;
+  }
+  sfx('bad');
+  if(EX.attempt===1){
+    EX.attempt=2;EX.combo=0;$('.qtop .combo').textContent='COMBO 0';
+    EX.cur.weaken();
+    fb.innerHTML=`<div class="fb"><div class="mframe pic"><img data-img="p9" alt=""></div><div>
+      <div class="head">BOP! 再想想</div>
+      <div class="bubble hintb"><b>偵探助手的線索提示：</b>${q.hint}</div>
+      <p class="note">錯誤的部分已退回或變灰，請再作答一次。</p></div></div>`;
+    hydrate(fb);$('#submit').disabled=!EX.cur.ready();
+    return;
+  }
+  EX.results.push({q,id:baseId,correct:false,conf:EX.conf});
+  lockStage();EX.cur.reveal();
+  const v=variantOf(q.base||q);
+  fb.innerHTML=`<div class="fb" style="grid-template-columns:1fr"><div>
+    <div class="head">證物對照卡</div>
+    <div class="evi"><div class="x"><b>✗ 錯誤寫法</b>${q.cmp.x}</div><div><b>✔ 正確寫法</b>${q.cmp.o}</div></div>
+    <div class="lesson"><span class="tm">30 SEC</span> 重點小教材：${q.lesson}<br><b>規則：</b>${q.rule}</div>
+    <p class="note">此概念已標記為「懸案」，結案報告書會提供返回 ${CASES.find(c=>c.id===q.case).name} 的連結。</p>
+    <div class="vhost"><b>類題練習（換情境，不計分）</b><div class="qprompt" style="font-size:1rem;margin-top:6px">${v.prompt}</div><div id="vq"></div>
+     <div class="qact"><button class="btn" id="vcheck" disabled>檢查類題</button><span id="vres" style="font-weight:700"></span></div></div>
+    <div class="qact" style="margin-top:14px"><button class="btn hidden" id="nextQ">${EX.idx+1<EX.list.length?'下一份證物 →':'查看結案報告書 →'}</button></div>
+  </div></div>`;
+  const vs=renderQ(v,$('#vq'));
+  vs.onChange=()=>{$('#vcheck').disabled=!vs.ready()};
+  $('#vcheck').addEventListener('click',()=>{
+    const r=vs.check();vs.reveal();$('#vcheck').disabled=true;
+    $('#vres').textContent=r?'類題答對！觀念抓到了。':'類題仍有誤，已顯示正確答案，記得回案件複習。';
+    sfx(r?'ok':'bad');$('#nextQ').classList.remove('hidden');
+  });
+  $('#nextQ').addEventListener('click',next);
+}
+function lockStage(){$('#submit').disabled=true;$$('#qhost .opt,#qhost .seg,#qhost .qcard').forEach(x=>{x.style.pointerEvents='none';x.classList.add('locked')});$$('.conf button').forEach(b=>b.disabled=true);clearInterval(EX.timer)}
+function next(){EX.idx++;if(EX.idx<EX.list.length){showQ();$('#stage').scrollIntoView({behavior:reduce?'auto':'smooth'})}else report()}
+
+let lastWrong=[],lastRight=[],revisited=new Set();
+function report(){
+  clearInterval(EX.timer);
+  const R=EX.results,n=R.length,c=R.filter(r=>r.correct).length,acc=n?c/n:0;
+  const critOk=R.filter(r=>QS.find(q=>q.id===r.id).critical).every(r=>r.correct);
+  const mastered=acc>=.8&&critOk;
+  if(mastered&&!S.mastered){S.mastered=true;save();renderHUD()}
+  lastWrong=R.filter(r=>!r.correct).map(r=>r.id);lastRight=R.filter(r=>r.correct).map(r=>r.id);revisited=new Set();
+  const by={};Object.keys(CONCEPTS).forEach(k=>by[k]={n:0,c:0});
+  R.forEach(r=>{const k=QS.find(q=>q.id===r.id).concept;by[k].n++;if(r.correct)by[k].c++});
+  const wrong=R.filter(r=>!r.correct);
+  const coldCases=[...new Set(wrong.map(r=>QS.find(q=>q.id===r.id).case))];
+  $('#stage').classList.add('hidden');
+  const rep=$('#report');rep.classList.remove('hidden');
+  rep.innerHTML=`<div class="report">
+    <div class="bigstamp">${mastered?'✔ 結案成功':'⏳ 案件待續'}</div>
+    <h2>偵探結案報告書</h2><p style="font-weight:700;margin-top:0">${EX.mode==='retake'?'補考偵訊室結果':'結案考核結果'}・目前階級：${rankName()}</p>
+    <div class="kpis">
+     <div class="kpi"><b>${Math.round(acc*100)}%</b><span>正確率</span></div>
+     <div class="kpi"><b>${c}/${n}</b><span>答對題數</span></div>
+     <div class="kpi"><b>${n-c}</b><span>答錯題數</span></div>
+     <div class="kpi"><b>${S.points}</b><span>累積破案點數</span></div>
+    </div>
+    <p><b>精熟判定：</b>${mastered?'已達精熟標準（正確率 ≥ 80%，且關鍵題全對）。':`尚未達精熟標準（需正確率 ≥ 80%${critOk?'':'，且「文獻類型」「真偽查核」必須答對'}）。`}</p>
+    <h3>四大概念區正確率</h3>
+    <div class="bars">${Object.entries(CONCEPTS).map(([k,v])=>{const b=by[k];const p=b.n?Math.round(b.c/b.n*100):null;return `<div class="barrow"><span>${v}</span><div class="bt"><i style="width:0" data-w="${p??0}"></i></div><span>${p===null?'—':p+'%'}</span></div>`}).join('')}</div>
+    ${wrong.length?`<h3>答錯題檢討</h3><div class="wlist">${wrong.map(r=>{const q=QS.find(x=>x.id===r.id),cs=CASES.find(x=>x.id===q.case),blind=r.conf==='high';
+      return `<div class="witem ${blind?'blind':''}">${blind?'<span class="flag">最需注意的盲點：很有把握卻答錯</span><br>':''}<b>證物 ${R.indexOf(r)+1}（${CONCEPTS[q.concept]}）</b>　作答信心：${CONF[r.conf]}<br><b>錯誤原因：</b>${q.cmp.x} 不符規範<br><b>正確規則：</b>${q.rule}<br><a href="#${q.case}" class="backlink" data-case="${q.case}">→ 返回${cs.name}「${cs.title}」複習</a></div>`}).join('')}</div>`:''}
+    <h3>徽章與階級</h3>
+    <div class="hud-badges" style="display:flex">${CASES.map((c,i)=>`<span class="mb ${S.badges.includes(i)?'on':''}" style="width:44px;height:44px;font-size:1.1rem" title="${c.badge}">${c.ch}</span>`).join('')}</div>
+    ${mastered?`
+     <h3 style="margin-top:24px">頒發「首席文獻偵探」證書</h3>
+     <div class="refl"><label><b>學習反思</b>：我原本以為……<input id="r1" placeholder="例：網路上下載的都算網頁格式"></label><label>現在我知道……<input id="r2" placeholder="例：要看文獻本身的身分線索"></label></div>
+     <div class="cert-form"><label><b>偵探姓名</b><input id="certName" placeholder="輸入你的名字"></label><div><button class="btn" id="mkCert">產生證書</button> <button class="btn ghost hidden" id="dlCert">下載證書 PNG</button></div></div>
+     <canvas id="certCanvas" width="1200" height="850" class="hidden"></canvas>`
+    :`
+     <h3 style="margin-top:24px">懸案清單</h3>
+     <p>只需重修答錯概念的案件，不必從頭重讀。點下方連結回到案件完成練習，全部重修後才會解鎖「補考偵訊室」。</p>
+     <div class="cold">${coldCases.map(id=>{const cs=CASES.find(x=>x.id===id);return `<button class="btn ghost coldbtn" data-case="${id}">重修 ${cs.name}・${cs.title}</button>`}).join('')}</div>
+     <button class="btn" id="retake" disabled>進入補考偵訊室 →</button>`}
+  </div>`;
+  hydrate(rep);
+  requestAnimationFrame(()=>setTimeout(()=>$$('.bt i',rep).forEach(i=>i.style.width=i.dataset.w+'%'),60));
+  rep.scrollIntoView({behavior:reduce?'auto':'smooth'});
+  sfx(mastered?'win':'stamp');
+  const goCase=id=>{revisited.add(id);const b=$(`.coldbtn[data-case="${id}"]`,rep);if(b){b.textContent='✔ '+b.textContent.replace(/^✔ /,'');b.classList.remove('ghost')}
+    const rt=$('#retake');if(rt)rt.disabled=!coldCases.every(c=>revisited.has(c));
+    $('#backToReport').classList.remove('hidden');document.getElementById(id).scrollIntoView({behavior:reduce?'auto':'smooth'})};
+  $$('.coldbtn,.backlink',rep).forEach(b=>b.addEventListener('click',e=>{e.preventDefault();goCase(b.dataset.case)}));
+  const rt=$('#retake');if(rt)rt.addEventListener('click',()=>{
+    const wrongQs=lastWrong.map(id=>variantOf(QS.find(q=>q.id===id)));
+    const rightQs=shuffle(lastRight).slice(0,2).map(id=>variantOf(QS.find(q=>q.id===id)));
+    startExam('retake',shuffle(wrongQs.concat(rightQs)));
+  });
+  const mk=$('#mkCert');if(mk)mk.addEventListener('click',drawCert);
+  const dl=$('#dlCert');if(dl)dl.addEventListener('click',()=>{const a=document.createElement('a');a.download='首席文獻偵探證書.png';a.href=$('#certCanvas').toDataURL('image/png');a.click()});
+}
+
+function drawCert(){
+  const cv=$('#certCanvas'),x=cv.getContext('2d'),W=1200,H=850;
+  const name=($('#certName').value||'見習偵探').slice(0,20),r1=$('#r1').value.trim(),r2=$('#r2').value.trim();
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  x.fillStyle='#111';
+  for(let i=0;i<W;i+=9)for(let j=0;j<H;j+=9){const d=Math.min(i,W-i,j,H-j);if(d<120){x.beginPath();x.arc(i,j,(120-d)/120*3.2,0,7);x.fill()}}
+  x.lineWidth=14;x.strokeRect(40,40,W-80,H-80);x.lineWidth=4;x.strokeRect(62,62,W-124,H-124);
+  x.fillStyle='#fff';x.fillRect(90,90,W-180,H-180);
+  x.fillStyle='#111';x.textAlign='center';
+  x.font='900 30px "Noto Sans TC",sans-serif';x.fillText('APA 文獻偵探社',W/2,175);
+  x.font='900 84px "Noto Sans TC",sans-serif';x.fillText('首席文獻偵探',W/2,285);
+  x.font='700 30px "Noto Sans TC",sans-serif';x.fillText('茲證明',W/2,360);
+  x.font='900 64px "Noto Sans TC",sans-serif';x.fillText(name,W/2,445);
+  x.fillRect(W/2-220,465,440,5);
+  x.font='500 26px "Noto Sans TC",sans-serif';
+  x.fillText('已破解五大案件並通過結案考核，熟練 APA 7 內文引用與參考文獻編排，',W/2,530);
+  x.fillText('能查核來源真偽，不引用查無出處的文獻。真相只有一個！',W/2,570);
+  if(r1||r2){x.font='italic 500 22px "Noto Sans TC",sans-serif';const t=`「我原本以為${r1||'……'}，現在我知道${r2||'……'}。」`;x.fillText(t.length>46?t.slice(0,45)+'…」':t,W/2,630)}
+  const d=new Date();x.font='700 22px "Noto Sans TC",sans-serif';x.textAlign='left';
+  x.fillText(`結案日期：${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`,130,730);x.fillText(`破案點數：${S.points} PTS`,130,765);
+  x.save();x.translate(W-240,690);x.rotate(-.22);x.lineWidth=8;x.beginPath();x.arc(0,0,92,0,7);x.stroke();x.lineWidth=3;x.beginPath();x.arc(0,0,78,0,7);x.stroke();
+  x.textAlign='center';x.font='900 40px "Noto Sans TC",sans-serif';x.fillText('結案',0,8);x.font='700 16px "Noto Sans TC",sans-serif';x.fillText('CASE CLOSED',0,40);x.restore();
+  cv.classList.remove('hidden');$('#dlCert').classList.remove('hidden');sfx('stamp');
+}
+
+$('#startExam').addEventListener('click',()=>startExam('main',QS.map(q=>Object.assign({},q))));
+}
+$('#backToReport').addEventListener('click',()=>{const r=$('#report');if(r)r.scrollIntoView({behavior:reduce?'auto':'smooth'})});
+initContent();
+
+renderHUD();
+if(S.badges.length)begin(true);
+})();
+</script>
+</body>
+</html>
